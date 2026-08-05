@@ -8,7 +8,7 @@
       "repeat_customer"
     ],
     "case_status": "no_action",
-    "confidence": 0.92
+    "confidence": 0.99
   },
   "affected_entities": {
     "order_ids": [
@@ -20,7 +20,9 @@
       "ca0400dec2c292340c373e63b1c2c597:3",
       "ca0400dec2c292340c373e63b1c2c597:4"
     ],
-    "seller_ids": [],
+    "seller_ids": [
+      "751bdc4d83a466c7206cd42e8f426b03"
+    ],
     "payment_ids": [
       "ca0400dec2c292340c373e63b1c2c597:1",
       "ca0400dec2c292340c373e63b1c2c597:2"
@@ -37,7 +39,7 @@
       "42bf9ee410b1247f0223626107834b87"
     ],
     "category_names": [
-      "sports_leisure"
+      "esporte_lazer"
     ]
   },
   "delivery_analysis": {
@@ -85,7 +87,6 @@
     "item:ca0400dec2c292340c373e63b1c2c597:4",
     "payment:ca0400dec2c292340c373e63b1c2c597:1",
     "payment:ca0400dec2c292340c373e63b1c2c597:2",
-    "seller:751bdc4d83a466c7206cd42e8f426b03",
     "policy:MULTIPLE_PAYMENTS_RECONCILED"
   ],
   "financial_resolution": {

@@ -7,7 +7,7 @@
       "multi_seller_order"
     ],
     "case_status": "no_action",
-    "confidence": 0.92
+    "confidence": 0.99
   },
   "affected_entities": {
     "order_ids": [
@@ -17,7 +17,10 @@
       "f396e1280028fa9c8c83111abee5f2e9:1",
       "f396e1280028fa9c8c83111abee5f2e9:2"
     ],
-    "seller_ids": [],
+    "seller_ids": [
+      "ccc4bbb5f32a6ab2b7066a4130f114e3",
+      "f7ba60f8c3f99e7ee4042fdef03b70c4"
+    ],
     "payment_ids": [
       "f396e1280028fa9c8c83111abee5f2e9:1"
     ]
@@ -32,7 +35,7 @@
       "9b1954fdd0f9b4ef4ee2d267ac9de4bd"
     ],
     "category_names": [
-      "health_beauty"
+      "beleza_saude"
     ]
   },
   "delivery_analysis": {
@@ -82,8 +85,6 @@
     "item:f396e1280028fa9c8c83111abee5f2e9:1",
     "item:f396e1280028fa9c8c83111abee5f2e9:2",
     "payment:f396e1280028fa9c8c83111abee5f2e9:1",
-    "seller:ccc4bbb5f32a6ab2b7066a4130f114e3",
-    "seller:f7ba60f8c3f99e7ee4042fdef03b70c4",
     "policy:DELIVERY_WITHIN_ESTIMATE"
   ],
   "financial_resolution": {
@@ -91,6 +92,7 @@
     "recommended_refund_brl": 0.0
   },
   "resolution_actions": [
-    "reject_late_refund"
+    "reject_late_refund",
+    "coordinate_multi_seller_case"
   ]
 }

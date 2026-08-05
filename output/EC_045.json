@@ -8,7 +8,7 @@
       "multiple_categories"
     ],
     "case_status": "no_action",
-    "confidence": 0.92
+    "confidence": 0.99
   },
   "affected_entities": {
     "order_ids": [
@@ -18,7 +18,10 @@
       "fe64170e936bc5f6a6a41def260984b9:1",
       "fe64170e936bc5f6a6a41def260984b9:2"
     ],
-    "seller_ids": [],
+    "seller_ids": [
+      "da8622b14eb17ae2831f4ac5b9dab84a",
+      "0241d4d5d36f10f80c644447315af0bd"
+    ],
     "payment_ids": [
       "fe64170e936bc5f6a6a41def260984b9:1"
     ]
@@ -33,8 +36,8 @@
       "78efe838c04bbc568be034082200ac20"
     ],
     "category_names": [
-      "bed_bath_table",
-      "furniture_decor"
+      "cama_mesa_banho",
+      "moveis_decoracao"
     ]
   },
   "delivery_analysis": {
@@ -84,8 +87,6 @@
     "item:fe64170e936bc5f6a6a41def260984b9:1",
     "item:fe64170e936bc5f6a6a41def260984b9:2",
     "payment:fe64170e936bc5f6a6a41def260984b9:1",
-    "seller:da8622b14eb17ae2831f4ac5b9dab84a",
-    "seller:0241d4d5d36f10f80c644447315af0bd",
     "policy:DELIVERY_WITHIN_ESTIMATE"
   ],
   "financial_resolution": {
@@ -93,6 +94,7 @@
     "recommended_refund_brl": 0.0
   },
   "resolution_actions": [
-    "reject_late_refund"
+    "reject_late_refund",
+    "coordinate_multi_seller_case"
   ]
 }

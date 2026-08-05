@@ -7,7 +7,7 @@
       "repeat_customer"
     ],
     "case_status": "action_required",
-    "confidence": 0.92
+    "confidence": 0.99
   },
   "affected_entities": {
     "order_ids": [
@@ -36,7 +36,7 @@
       "9388e84da6051e85eb86fc653c3aa64f"
     ],
     "category_names": [
-      "bed_bath_table"
+      "cama_mesa_banho"
     ]
   },
   "delivery_analysis": {

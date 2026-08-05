@@ -7,7 +7,7 @@
       "repeat_customer"
     ],
     "case_status": "action_required",
-    "confidence": 0.92
+    "confidence": 0.99
   },
   "affected_entities": {
     "order_ids": [
@@ -17,7 +17,9 @@
       "9f5bd892aa4c461b116e5c163f16b40a:1",
       "9f5bd892aa4c461b116e5c163f16b40a:2"
     ],
-    "seller_ids": [],
+    "seller_ids": [
+      "8b28d096634035667e8263d57ba3368c"
+    ],
     "payment_ids": [
       "9f5bd892aa4c461b116e5c163f16b40a:1"
     ]
@@ -33,7 +35,7 @@
       "da6f9d8ce4950ad572b7b4fe7d7e6c90"
     ],
     "category_names": [
-      "health_beauty"
+      "beleza_saude"
     ]
   },
   "delivery_analysis": {
@@ -82,7 +84,6 @@
     "item:9f5bd892aa4c461b116e5c163f16b40a:1",
     "item:9f5bd892aa4c461b116e5c163f16b40a:2",
     "payment:9f5bd892aa4c461b116e5c163f16b40a:1",
-    "seller:8b28d096634035667e8263d57ba3368c",
     "policy:CARRIER_DELIVERED_AFTER_ESTIMATE"
   ],
   "financial_resolution": {

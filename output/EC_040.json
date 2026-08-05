@@ -7,7 +7,7 @@
       "multiple_categories"
     ],
     "case_status": "action_required",
-    "confidence": 0.92
+    "confidence": 0.99
   },
   "affected_entities": {
     "order_ids": [
@@ -17,7 +17,9 @@
       "992cbe3e064cd39f9ccde60a29ffcd3c:1",
       "992cbe3e064cd39f9ccde60a29ffcd3c:2"
     ],
-    "seller_ids": [],
+    "seller_ids": [
+      "5b581417df4480f632484ba681e53944"
+    ],
     "payment_ids": [
       "992cbe3e064cd39f9ccde60a29ffcd3c:1"
     ]
@@ -33,7 +35,7 @@
     ],
     "category_names": [
       "cool_stuff",
-      "toys"
+      "brinquedos"
     ]
   },
   "delivery_analysis": {
@@ -82,7 +84,6 @@
     "item:992cbe3e064cd39f9ccde60a29ffcd3c:1",
     "item:992cbe3e064cd39f9ccde60a29ffcd3c:2",
     "payment:992cbe3e064cd39f9ccde60a29ffcd3c:1",
-    "seller:5b581417df4480f632484ba681e53944",
     "policy:CARRIER_DELIVERED_AFTER_ESTIMATE"
   ],
   "financial_resolution": {

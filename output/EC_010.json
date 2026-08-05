@@ -8,7 +8,7 @@
       "split_payment"
     ],
     "case_status": "no_action",
-    "confidence": 0.92
+    "confidence": 0.99
   },
   "affected_entities": {
     "order_ids": [
@@ -18,7 +18,10 @@
       "919baca007d9525b6668c18f79a33197:1",
       "919baca007d9525b6668c18f79a33197:2"
     ],
-    "seller_ids": [],
+    "seller_ids": [
+      "c60b801f2d52c7f7f91de00870882a75",
+      "7d13fca15225358621be4086e1eb0964"
+    ],
     "payment_ids": [
       "919baca007d9525b6668c18f79a33197:1",
       "919baca007d9525b6668c18f79a33197:2"
@@ -34,7 +37,7 @@
       "e0d64dcfaa3b6db5c54ca298ae101d05"
     ],
     "category_names": [
-      "watches_gifts"
+      "relogios_presentes"
     ]
   },
   "delivery_analysis": {
@@ -85,8 +88,6 @@
     "item:919baca007d9525b6668c18f79a33197:2",
     "payment:919baca007d9525b6668c18f79a33197:1",
     "payment:919baca007d9525b6668c18f79a33197:2",
-    "seller:c60b801f2d52c7f7f91de00870882a75",
-    "seller:7d13fca15225358621be4086e1eb0964",
     "policy:MULTIPLE_PAYMENTS_RECONCILED"
   ],
   "financial_resolution": {
@@ -94,6 +95,7 @@
     "recommended_refund_brl": 0.0
   },
   "resolution_actions": [
-    "explain_valid_split_payment"
+    "explain_valid_split_payment",
+    "coordinate_multi_seller_case"
   ]
 }

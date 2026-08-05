@@ -7,7 +7,7 @@
       "split_payment"
     ],
     "case_status": "action_required",
-    "confidence": 0.92
+    "confidence": 0.99
   },
   "affected_entities": {
     "order_ids": [
@@ -34,7 +34,7 @@
       "c857b96593773e940454e76efa8eabb3"
     ],
     "category_names": [
-      "furniture_decor"
+      "moveis_decoracao"
     ]
   },
   "delivery_analysis": {

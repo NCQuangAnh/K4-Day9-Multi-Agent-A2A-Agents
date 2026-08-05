@@ -7,7 +7,7 @@
       "repeat_customer"
     ],
     "case_status": "no_action",
-    "confidence": 0.92
+    "confidence": 0.99
   },
   "affected_entities": {
     "order_ids": [
@@ -17,7 +17,9 @@
       "efcd8852328a37fca811747c09c6fb69:1",
       "efcd8852328a37fca811747c09c6fb69:2"
     ],
-    "seller_ids": [],
+    "seller_ids": [
+      "520b493b57809f446cb0a233bb3e25c7"
+    ],
     "payment_ids": [
       "efcd8852328a37fca811747c09c6fb69:1"
     ]
@@ -33,7 +35,7 @@
       "cf8c83ef74f69705d1bec196473b1b45"
     ],
     "category_names": [
-      "bed_bath_table"
+      "cama_mesa_banho"
     ]
   },
   "delivery_analysis": {
@@ -77,7 +79,6 @@
     "item:efcd8852328a37fca811747c09c6fb69:1",
     "item:efcd8852328a37fca811747c09c6fb69:2",
     "payment:efcd8852328a37fca811747c09c6fb69:1",
-    "seller:520b493b57809f446cb0a233bb3e25c7",
     "policy:DELIVERY_WITHIN_ESTIMATE"
   ],
   "financial_resolution": {

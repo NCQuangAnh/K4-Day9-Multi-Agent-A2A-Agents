@@ -6,7 +6,7 @@
       "repeat_customer"
     ],
     "case_status": "action_required",
-    "confidence": 0.92
+    "confidence": 0.9
   },
   "affected_entities": {
     "order_ids": [
@@ -15,7 +15,9 @@
     "item_ids": [
       "2cfc79d9582e9135c0a9b61fa60e6b21:1"
     ],
-    "seller_ids": [],
+    "seller_ids": [
+      "dbc22125167c298ef99da25668e1011f"
+    ],
     "payment_ids": [
       "2cfc79d9582e9135c0a9b61fa60e6b21:1"
     ]
@@ -31,7 +33,7 @@
       "6bd248f93425ceeb625a8a97e2404112"
     ],
     "category_names": [
-      "stationery"
+      "papelaria"
     ]
   },
   "delivery_analysis": {
@@ -79,7 +81,6 @@
     "order:2cfc79d9582e9135c0a9b61fa60e6b21",
     "item:2cfc79d9582e9135c0a9b61fa60e6b21:1",
     "payment:2cfc79d9582e9135c0a9b61fa60e6b21:1",
-    "seller:dbc22125167c298ef99da25668e1011f",
     "policy:ORDER_CANCELED_AFTER_PAYMENT"
   ],
   "financial_resolution": {

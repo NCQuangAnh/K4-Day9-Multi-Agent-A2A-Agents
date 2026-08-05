@@ -6,7 +6,7 @@
       "multi_item_order"
     ],
     "case_status": "action_required",
-    "confidence": 0.92
+    "confidence": 0.9
   },
   "affected_entities": {
     "order_ids": [
@@ -16,7 +16,9 @@
       "6560fb10610771449cb0463c5ba12199:1",
       "6560fb10610771449cb0463c5ba12199:2"
     ],
-    "seller_ids": [],
+    "seller_ids": [
+      "897060da8b9a21f655304d50fd935913"
+    ],
     "payment_ids": [
       "6560fb10610771449cb0463c5ba12199:1"
     ]
@@ -30,7 +32,7 @@
       "dc2410804cf782c5d87dbcd201b74e9b"
     ],
     "category_names": [
-      "computers_accessories"
+      "informatica_acessorios"
     ]
   },
   "delivery_analysis": {
@@ -38,7 +40,14 @@
     "estimated_delivery_at": "2017-10-27 00:00:00",
     "carrier_handoff_at": null,
     "delivery_variance_hours": null,
-    "seller_handoff_analysis": [],
+    "seller_handoff_analysis": [
+      {
+        "seller_id": "897060da8b9a21f655304d50fd935913",
+        "shipping_limit_at": "2017-10-05 22:35:22",
+        "handoff_variance_hours": null,
+        "late_handoff": false
+      }
+    ],
     "late_handoff_seller_ids": []
   },
   "payment_reconciliation": {
@@ -72,7 +81,6 @@
     "item:6560fb10610771449cb0463c5ba12199:1",
     "item:6560fb10610771449cb0463c5ba12199:2",
     "payment:6560fb10610771449cb0463c5ba12199:1",
-    "seller:897060da8b9a21f655304d50fd935913",
     "policy:ORDER_CANCELED_AFTER_PAYMENT"
   ],
   "financial_resolution": {

@@ -62,11 +62,11 @@
     "pandas": "2.0.3"
   },
   "run": {
-    "started_at": "2026-08-05T13:06:11.749570+00:00",
-    "finished_at": "2026-08-05T13:09:17.574243+00:00",
-    "duration_seconds": 185.82,
+    "started_at": "2026-08-05T13:25:25.639549+00:00",
+    "finished_at": "2026-08-05T13:27:59.588331+00:00",
+    "duration_seconds": 153.95,
     "cases": 50,
-    "llm_calls": 354,
+    "llm_calls": 351,
     "llm_failures": 0,
     "policy_discrepancies": 0,
     "gate_failures": 0,

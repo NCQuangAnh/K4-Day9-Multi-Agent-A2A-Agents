@@ -7,7 +7,7 @@
       "split_payment"
     ],
     "case_status": "action_required",
-    "confidence": 0.92
+    "confidence": 0.99
   },
   "affected_entities": {
     "order_ids": [
@@ -35,7 +35,7 @@
       "ce066f4a83649651549d717c9b566816"
     ],
     "category_names": [
-      "sports_leisure"
+      "esporte_lazer"
     ]
   },
   "delivery_analysis": {
