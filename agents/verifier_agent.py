@@ -15,7 +15,7 @@ class VerifierAgent(BaseAgent):
     def verify(self, case_id: str, output: dict, db: OlistData) -> dict:
         """
         Validate and fix the final output JSON.
-        - Check evidence ID format and existence
+        - Check evidence ID format and existence against CSV data
         - Enforce array limits
         - Ensure null handling for missing data
         Returns the corrected output dict.
@@ -46,37 +46,53 @@ class VerifierAgent(BaseAgent):
 
         output["resolution_actions"] = (output.get("resolution_actions") or [])[:5]
 
-        # ── Build and validate evidence IDs ──
+        # ── Build evidence IDs directly from CSV data ──
         evidence_ids = []
         order_id = ae["order_ids"][0] if ae["order_ids"] else None
 
         if order_id:
-            # order evidence
+            # 1. order evidence
             order_data = db.get_order(order_id)
             if order_data:
                 evidence_ids.append(f"order:{order_id}")
 
-            # item evidence
-            for item_id in ae.get("item_ids", []):
-                evidence_ids.append(f"item:{item_id}")
+            # 2. item evidence (sorted by order_item_id)
+            items_raw = db.get_order_items(order_id)
+            sorted_items = sorted(
+                items_raw,
+                key=lambda x: int(x.get("order_item_id", 0)) if str(x.get("order_item_id", "")).isdigit() else 0
+            )
+            for item in sorted_items[:5]:
+                item_seq = item.get("order_item_id")
+                if item_seq is not None:
+                    evidence_ids.append(f"item:{order_id}:{item_seq}")
 
-            # payment evidence
-            for payment_id in ae.get("payment_ids", []):
-                evidence_ids.append(f"payment:{payment_id}")
+            # 3. payment evidence (sorted by payment_sequential)
+            payments_raw = db.get_order_payments(order_id)
+            sorted_payments = sorted(
+                payments_raw,
+                key=lambda x: int(x.get("payment_sequential", 0)) if str(x.get("payment_sequential", "")).isdigit() else 0
+            )
+            for pay in sorted_payments[:5]:
+                pay_seq = pay.get("payment_sequential")
+                if pay_seq is not None:
+                    evidence_ids.append(f"payment:{order_id}:{pay_seq}")
 
-            # seller evidence (only responsible sellers)
-            rca = output.get("root_cause_analysis", {})
+            # 4. seller evidence (only responsible sellers)
             for party in rca.get("responsible_parties", []):
                 if party.get("party_type") == "seller":
-                    evidence_ids.append(f"seller:{party['party_id']}")
+                    seller_id = party.get("party_id")
+                    if seller_id and db.get_seller(seller_id):
+                        evidence_ids.append(f"seller:{seller_id}")
 
-        # policy evidence
+        # 5. policy evidence
         for cause in output.get("root_cause_analysis", {}).get("ranked_causes", []):
-            evidence_ids.append(f"policy:{cause['cause_code']}")
+            cause_code = cause.get("cause_code")
+            if cause_code:
+                evidence_ids.append(f"policy:{cause_code}")
 
         # Limit to 20 evidence IDs
-        evidence_ids = evidence_ids[:20]
-        output["evidence_ids"] = evidence_ids
+        output["evidence_ids"] = evidence_ids[:20]
 
         # ── Confidence bounds ──
         ca = output.get("case_assessment", {})
@@ -87,7 +103,7 @@ class VerifierAgent(BaseAgent):
         output["case_assessment"] = ca
 
         self.log_action(case_id, "verification_complete", {
-            "evidence_count": len(evidence_ids),
+            "evidence_count": len(output["evidence_ids"]),
         })
 
         return output

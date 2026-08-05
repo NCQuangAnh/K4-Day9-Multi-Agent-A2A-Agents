@@ -15,7 +15,7 @@ class PaymentAgent(BaseAgent):
     def process(self, case_id: str, order_id: str, db: OlistData, items_raw: list) -> dict:
         """
         Reconcile payments against items + freight.
-        Returns payment_reconciliation and payment_ids dict.
+        Returns payment_reconciliation, payment_ids, and payments_raw dict.
         """
         self.log_action(case_id, "reconcile_payments", {"order_id": order_id})
 
@@ -34,6 +34,7 @@ class PaymentAgent(BaseAgent):
                     "payment_types": [],
                 },
                 "payment_ids": [],
+                "payments_raw": [],
             }
 
         # Sort payments by payment_sequential ascending (1, 2, 3...)
@@ -75,6 +76,7 @@ class PaymentAgent(BaseAgent):
                     "payment_types": payment_types,
                 },
                 "payment_ids": payment_ids[:5],
+                "payments_raw": payments,
             }
         else:
             item_total = sum(
@@ -104,6 +106,7 @@ class PaymentAgent(BaseAgent):
                     "payment_types": payment_types,
                 },
                 "payment_ids": payment_ids[:5],
+                "payments_raw": payments,
             }
 
         self.log_action(case_id, "payments_reconciled", {
