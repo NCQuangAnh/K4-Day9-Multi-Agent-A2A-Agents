@@ -18,7 +18,10 @@ env/
 
 # Artifact tam thoi
 selftest/
-submission*.zip
+negtest_tmp/
+# File nop bai (sinh lai bang: python run.py --zip)
+output.zip
+output_*.zip
 
 # LUU Y: KHONG gitignore output/ va logging/
 # README §8 yeu cau repo phai co trace.jsonl va metadata.json;

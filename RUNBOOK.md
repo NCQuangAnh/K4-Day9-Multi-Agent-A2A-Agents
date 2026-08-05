@@ -63,7 +63,7 @@ Phải in `SAN SANG NOP`. Lệnh này kiểm tra:
 python run.py --zip
 ```
 
-Sinh `submission.zip` chứa **phẳng 50 file JSON**, không kèm source code, không kèm `.env` (README §9.2).
+Sinh **`output.zip`** chứa **phẳng 50 file JSON**, không kèm source code, không kèm `.env` (README §9.2).
 
 ---
 
@@ -127,4 +127,4 @@ Nếu sửa vào `core.py`, chạy lại `--unittest` và `--selftest` trước 
 - [ ] `individual_01352_NguyenCaoQuangAnh.md` đã điền
 - [ ] `.env` **không** nằm trong git
 - [ ] Source code đã commit và push
-- [ ] `submission.zip` chỉ chứa 50 JSON
+- [ ] `output.zip` chỉ chứa 50 JSON

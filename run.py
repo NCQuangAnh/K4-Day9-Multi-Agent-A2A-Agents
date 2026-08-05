@@ -421,7 +421,7 @@ def cmd_validate(store: DataStore, expect: int = 50) -> int:
 
 def cmd_zip(src: Path | None = None, target: Path | None = None) -> int:
     src = src or OUTPUT_DIR
-    target = target or (ROOT / "submission.zip")
+    target = target or (ROOT / "output.zip")
     files = sorted(src.glob("EC_*.json"))
     with zipfile.ZipFile(target, "w", zipfile.ZIP_DEFLATED) as zf:
         for f in files:
@@ -463,7 +463,7 @@ def cmd_all_variants(cases: list[CaseInput]) -> int:
             changed = sum(1 for k in outs if outs[k] != base_out.get(k))
 
         failures = sum(1 for o in outs.values() if Verifier(store).run(o))
-        cmd_zip(out_dir, root / f"submission_{name}.zip")
+        cmd_zip(out_dir, root / f"output_{name}.zip")
         summary.append((name, changed, failures))
         print(f"  variant '{name}': {changed} case khac base, {failures} case fail gate\n")
 
