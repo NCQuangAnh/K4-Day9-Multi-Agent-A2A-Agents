@@ -54,13 +54,14 @@ class DeliveryAgent(BaseAgent):
         late_handoff_seller_ids = []
 
         if items_raw:
-            # Group by seller_id and find earliest shipping_limit_date per seller
+            # Maintain insertion order of sellers from items_raw
             seller_limits = {}
             for item in items_raw:
                 seller_id = item.get("seller_id")
                 limit_str = item.get("shipping_limit_date")
                 if not seller_id or str(seller_id) == "nan":
                     continue
+                seller_id = str(seller_id)
                 limit_dt = parse_timestamp(limit_str)
                 if seller_id not in seller_limits or (
                     limit_dt and (seller_limits[seller_id]["dt"] is None or limit_dt < seller_limits[seller_id]["dt"])
@@ -69,23 +70,23 @@ class DeliveryAgent(BaseAgent):
 
             for seller_id, limit_info in seller_limits.items():
                 limit_dt = limit_info["dt"]
-                limit_str = limit_info["str"]
 
                 # handoff_variance_hours = carrier_handoff - shipping_limit
                 handoff_variance = hours_diff(carrier_handoff_at, limit_dt)
                 late_handoff = handoff_variance is not None and handoff_variance > 0
 
+                shipping_limit_at = limit_dt.strftime("%Y-%m-%d %H:%M:%S") if limit_dt else None
+
                 seller_handoff_analysis.append({
                     "seller_id": seller_id,
-                    "shipping_limit_at": str(limit_str).strip() if limit_str and str(limit_str) != "nan" else None,
+                    "shipping_limit_at": shipping_limit_at,
                     "handoff_variance_hours": handoff_variance,
                     "late_handoff": late_handoff,
                 })
 
-                if late_handoff:
+                if late_handoff and seller_id not in late_handoff_seller_ids:
                     late_handoff_seller_ids.append(seller_id)
 
-        # Format timestamps for output
         def fmt_ts(dt, raw):
             if dt is not None:
                 return dt.strftime("%Y-%m-%d %H:%M:%S")

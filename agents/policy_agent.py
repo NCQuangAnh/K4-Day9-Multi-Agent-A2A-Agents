@@ -21,6 +21,7 @@ class PolicyAgent(BaseAgent):
         delivery_analysis: dict,
         payment_reconciliation: dict,
         order_product_result: dict,
+        customer_context: dict,
     ) -> dict:
         """
         Apply EC_POLICY_V2 rules in priority order.
@@ -35,7 +36,7 @@ class PolicyAgent(BaseAgent):
         delivery_variance = delivery_analysis.get("delivery_variance_hours")
         late_handoff_seller_ids = delivery_analysis.get("late_handoff_seller_ids", [])
 
-        # ── Determine primary issue (priority order) ──
+        # ── Determine primary issue (priority order 1-6) ──
         primary_issue = None
         root_cause_code = None
         responsible_party_type = None
@@ -106,31 +107,33 @@ class PolicyAgent(BaseAgent):
 
         recommended_refund = round(recommended_refund, 2)
 
-        # ── Determine secondary issues (in order) ──
+        # ── Determine secondary issues (in exact business priority order 1-5) ──
         secondary_issues = []
 
-        # 1. multi_item_order: >= 2 item rows
+        # 1. multi_item_order: có từ 2 item row
         if len(items_raw) >= 2:
             secondary_issues.append("multi_item_order")
 
-        # 2. multi_seller_order: >= 2 distinct sellers
-        seller_ids_in_items = set()
+        # 2. multi_seller_order: có từ 2 seller khác nhau
+        seller_ids_in_items = []
         for item in items_raw:
             sid = item.get("seller_id")
-            if sid and str(sid) != "nan":
-                seller_ids_in_items.add(sid)
+            if sid and str(sid) != "nan" and str(sid) not in seller_ids_in_items:
+                seller_ids_in_items.append(str(sid))
         if len(seller_ids_in_items) >= 2:
             secondary_issues.append("multi_seller_order")
 
-        # 3. split_payment: >= 2 payment rows
+        # 3. split_payment: có từ 2 payment row
         if len(payments_raw) >= 2:
             secondary_issues.append("split_payment")
 
-        # 4. repeat_customer: handled by coordinator (needs customer_context)
-        # Will be added by coordinator if applicable
+        # 4. repeat_customer: cùng customer_unique_id có order khác
+        related_orders = customer_context.get("related_order_ids", []) or []
+        if len(related_orders) >= 1:
+            secondary_issues.append("repeat_customer")
 
-        # 5. multiple_categories: >= 2 distinct categories
-        categories = order_product_result.get("product_context", {}).get("category_names", [])
+        # 5. multiple_categories: có từ 2 category khác nhau
+        categories = order_product_result.get("product_context", {}).get("category_names", []) or []
         if len(categories) >= 2:
             secondary_issues.append("multiple_categories")
 
@@ -147,7 +150,7 @@ class PolicyAgent(BaseAgent):
                 "party_id": responsible_party_id,
             })
 
-        # ── Resolution actions (in order) ──
+        # ── Resolution actions (in exact business priority order) ──
         resolution_actions = [primary_action]
 
         # Additional actions in order:
@@ -177,7 +180,7 @@ class PolicyAgent(BaseAgent):
                 "primary_issue": primary_issue,
                 "secondary_issues": secondary_issues,
                 "case_status": case_status,
-                "confidence": None,  # Will be set by coordinator via LLM
+                "confidence": None,
             },
             "root_cause_analysis": {
                 "ranked_causes": ranked_causes[:3],

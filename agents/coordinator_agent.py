@@ -2,7 +2,6 @@
 coordinator_agent.py - Orchestrates all agents and assembles final output.
 """
 
-import json
 from agent_base import BaseAgent
 from data_loader import OlistData
 from agents.customer_agent import CustomerAgent
@@ -70,23 +69,12 @@ class CoordinatorAgent(BaseAgent):
             delivery_analysis=delivery_analysis,
             payment_reconciliation=payment_result["payment_reconciliation"],
             order_product_result=order_product_result,
+            customer_context=customer_context,
         )
 
-        # ── Add repeat_customer secondary issue ──
-        if len(customer_context.get("related_order_ids", [])) > 0:
-            secondary = policy_result["case_assessment"]["secondary_issues"]
-            # Insert at correct position (after split_payment, before multiple_categories)
-            insert_pos = len(secondary)
-            for i, s in enumerate(secondary):
-                if s == "multiple_categories":
-                    insert_pos = i
-                    break
-            secondary.insert(insert_pos, "repeat_customer")
-            policy_result["case_assessment"]["secondary_issues"] = secondary
-
-        # ── Step 6: LLM for confidence score ──
+        # ── Step 6: Confidence Score Calculation ──
         print(f"  [{case_id}] CoordinatorAgent: evaluating confidence...")
-        confidence = self._evaluate_confidence(case_id, order, delivery_analysis,
+        confidence = self._evaluate_confidence(order, delivery_analysis,
                                                 payment_result["payment_reconciliation"],
                                                 policy_result)
 
@@ -122,38 +110,21 @@ class CoordinatorAgent(BaseAgent):
 
         return output
 
-    def _evaluate_confidence(self, case_id, order, delivery, payment_recon, policy) -> float:
-        """Use LLM to evaluate confidence score based on evidence quality."""
-        primary = policy["case_assessment"]["primary_issue"]
-        status = policy["case_assessment"]["case_status"]
-        reconciled = payment_recon.get("reconciled")
-        variance = delivery.get("delivery_variance_hours")
+    def _evaluate_confidence(self, order, delivery, payment_recon, policy) -> float:
+        """
+        Calculate deterministic, high-precision confidence score
+        based on evidence completeness and calculation accuracy.
+        """
+        score = 0.85  # Base confidence for clear policy match
 
-        system_prompt = (
-            "You are a confidence evaluator for e-commerce dispute resolution. "
-            "Given the analysis results, output ONLY a single float between 0.0 and 1.0 "
-            "representing your confidence in the assessment. "
-            "Higher confidence when: data is complete, calculations are precise, "
-            "clear policy match. Lower when: missing data, edge cases. "
-            "Output ONLY the number, nothing else."
-        )
+        # Bonus for reconciled payments
+        if payment_recon.get("reconciled") is True:
+            score += 0.05
 
-        user_prompt = (
-            f"Primary issue: {primary}\n"
-            f"Case status: {status}\n"
-            f"Order status: {order.get('order_status') if order else 'unknown'}\n"
-            f"Payment reconciled: {reconciled}\n"
-            f"Delivery variance hours: {variance}\n"
-            f"Late handoff sellers: {len(delivery.get('late_handoff_seller_ids', []))}\n"
-            f"Refund amount: {policy['financial_resolution']['recommended_refund_brl']}\n"
-        )
+        # Bonus for complete delivery timestamps
+        if delivery.get("delivered_at") and delivery.get("estimated_delivery_at"):
+            score += 0.05
 
-        try:
-            result = self.call_llm(system_prompt, user_prompt)
-            # Parse float from response
-            confidence = float(result.strip().split()[0].strip(".,"))
-            confidence = max(0.0, min(1.0, confidence))
-            return round(confidence, 2)
-        except Exception as e:
-            print(f"  [{case_id}] Confidence evaluation failed: {e}, using default 0.85")
-            return 0.85
+        # Cap confidence between 0.0 and 0.98
+        score = max(0.0, min(0.98, score))
+        return round(score, 2)
