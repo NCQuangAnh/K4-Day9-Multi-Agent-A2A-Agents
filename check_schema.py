@@ -64,10 +64,14 @@ SPEC: list[tuple[str, Any, bool]] = [
     ("delivery_analysis.seller_handoff_analysis", list, False),
     ("delivery_analysis.late_handoff_seller_ids", list, False),
     ("payment_reconciliation.currency", str, False),
-    ("payment_reconciliation.item_total_brl", NUM, True),
-    ("payment_reconciliation.freight_total_brl", NUM, True),
+    # README §4 chi cho phep null DUNG BA field: expected_total_brl,
+    # difference_brl, reconciled. Ba field tien con lai LUON la so — vi du §6
+    # ghi 194.0 / 18.27 / 212.27. Truoc day cho phep null o day la SAI, va da
+    # khien lan nop 2 bi cong schema toan cuc tu choi (0 diem ca bai).
+    ("payment_reconciliation.item_total_brl", NUM, False),
+    ("payment_reconciliation.freight_total_brl", NUM, False),
+    ("payment_reconciliation.payment_total_brl", NUM, False),
     ("payment_reconciliation.expected_total_brl", NUM, True),
-    ("payment_reconciliation.payment_total_brl", NUM, True),
     ("payment_reconciliation.difference_brl", NUM, True),
     ("payment_reconciliation.reconciled", bool, True),
     ("payment_reconciliation.payment_types", list, False),

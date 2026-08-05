@@ -107,8 +107,13 @@ class Variant:
     # seller_handoff_analysis khi carrier_handoff_at = null: van liet ke seller
     # voi variance null (False) hay de mang rong (True)
     empty_handoff_when_no_carrier: bool = False
+    # !!! NGUY HIEM — DUNG BAT !!!
     # item_total_brl / freight_total_brl khi order khong co item row:
-    # 0.0 (False) hay null (True)
+    # 0.0 (False) hay null (True).
+    # Bat co nay lam VI PHAM SCHEMA: README §4 chi cho phep null dung BA field
+    # (expected_total_brl, difference_brl, reconciled); vi du §6 cho thay
+    # item_total_brl/freight_total_brl luon la so. Lan nop 2 bat co nay va bi
+    # cong schema toan cuc cua bai cham tu choi -> 0 diem CA BAI.
     null_money_when_no_items: bool = False
     # confidence: dung ham tat dinh (None) hay mot hang so co dinh
     fixed_confidence: float | None = None
@@ -132,16 +137,21 @@ VARIANTS: dict[str, Variant] = {
     "seller_resp": Variant("seller_resp", seller_ids_responsible_only=True),  # hm 2
     "cat_en": Variant("cat_en", english_categories=True),                    # hm 3
     "handoff_empty": Variant("handoff_empty", empty_handoff_when_no_carrier=True),  # 4
-    "money_null": Variant("money_null", null_money_when_no_items=True),      # hm 5
+    "money_null": Variant("money_null", null_money_when_no_items=True),      # VI PHAM
     "ev_all_sellers": Variant("ev_all_sellers", evidence_all_sellers=True),  # hm 6
     "actions_gated": Variant("actions_gated",
                              extra_actions_only_when_action_required=True),  # hm 7
-    # Lat CA BAY cung luc. Moi gia dinh cham dung MOT hang muc khac nhau nen
-    # doc 7 con so diem la biet ngay tung gia dinh dung hay sai.
-    # ('refund_late_only' bi loai: khong doi case nao trong bo 50 case nay.)
+    # Lat SAU gia dinh cung luc. Moi gia dinh cham dung MOT hang muc cham diem
+    # khac nhau nen doc 7 con so diem la biet ngay tung cai dung hay sai.
+    #
+    # CO Y KHONG bat null_money_when_no_items: do la thay doi duy nhat lam doi
+    # KIEU du lieu (so -> null) va da khien lan nop 2 bi 0 diem ca bai. Sau
+    # thay doi con lai chi doi GIA TRI, khong the vi pham schema.
+    #
+    # 'refund_late_only' cung bi loai: khong doi case nao trong bo 50 case nay.
     "combo": Variant("combo", fixed_confidence=0.92,
                      seller_ids_responsible_only=True, english_categories=True,
-                     empty_handoff_when_no_carrier=True, null_money_when_no_items=True,
+                     empty_handoff_when_no_carrier=True,
                      evidence_all_sellers=True,
                      extra_actions_only_when_action_required=True),
 }
