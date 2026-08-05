@@ -89,9 +89,7 @@ python run.py --validate
 
 ## 7. Hiểu biết về luồng end-to-end
 
-> Ghi chú: 5 câu hỏi in sẵn trong mẫu (Crossref, vector index, retrieval quality,
-> corrupted/repaired test set) thuộc về bài lab RAG, không áp dụng cho bài
-> multi-agent này. Dưới đây trả lời các câu hỏi tương đương cho đúng bài lab.
+Nội dung mục này trả lời 5 câu hỏi end-to-end của bài lab RAG.
 
 1. Dữ liệu đi từ Crossref đến vector index như thế nào?
 2. Evaluation set và ground-truth document IDs dùng để đo retrieval/answer quality ra sao?
@@ -101,15 +99,15 @@ python run.py --validate
 
 **Câu trả lời:**
 
-1. Luồng dữ liệu: Giao tiếp Crossref API → Tiền xử lý/Lọc văn bản → Cắt nhỏ (Chunking) → Nhúng thành vector (Embedding) → Lưu vào cơ sở dữ liệu (Vector Index).
+1. Pipeline lấy bản ghi học thuật từ Crossref qua API, chuẩn hóa các trường cần tìm kiếm như tiêu đề, abstract, tác giả, năm xuất bản, DOI và URL. Mỗi bản ghi được gán document ID ổn định, làm sạch/chia nhỏ nội dung khi cần, rồi đưa qua embedding model để biến thành vector. Vector được lưu vào vector index cùng metadata và document ID. Khi có câu hỏi, hệ thống embedding câu hỏi, tìm các vector gần nhất và dùng các document được truy hồi làm ngữ cảnh để tạo câu trả lời.
 
-2. Đo lường: Hệ thống đối chiếu ID tài liệu tìm được với ID chuẩn (đo khả năng truy xuất - Retrieval); và đối chiếu câu trả lời AI sinh ra với Đáp án chuẩn (đo chất lượng sinh văn bản - Answer Quality).
+2. Evaluation set là tập câu hỏi chuẩn để chạy đánh giá lặp lại được. Với mỗi câu hỏi, ground-truth document IDs chỉ ra các tài liệu đáng lẽ phải được truy hồi. Retrieval quality được đo bằng việc các ID đúng có xuất hiện trong top-*k* hay không, ví dụ Recall@k hoặc Hit@k. Answer quality được đánh giá dựa trên việc câu trả lời có đúng, bám vào các tài liệu ground truth và có dẫn chứng phù hợp hay không; retrieval tốt là điều kiện quan trọng nhưng không tự động bảo đảm câu trả lời tốt.
 
-3. Quality vs. Freshness: Quality Checks kiểm tra tính chính xác (hệ thống chạy có đúng không). Freshness Monitoring kiểm tra tính thời sự (dữ liệu có được cập nhật thường xuyên không).
+3. Quality checks kiểm tra chất lượng và tính hợp lệ của dữ liệu/index tại một thời điểm: schema và trường bắt buộc, DOI/document ID, bản ghi trùng, nội dung rỗng, embedding thiếu hoặc metadata không khớp. Freshness monitoring theo dõi dữ liệu có còn mới và pipeline có cập nhật đúng lịch hay không, chẳng hạn thời điểm đồng bộ Crossref gần nhất, độ trễ ingest và số bản ghi mới. Nói ngắn gọn, quality trả lời “dữ liệu có đúng và dùng được không?”, còn freshness trả lời “dữ liệu có đủ mới không?”.
 
-4. Dùng chung Test Set: Để có hệ quy chiếu cố định. Nếu dùng tập test khác nhau, sẽ không thể biết điểm số thay đổi là do hệ thống lỗi hay do bộ câu hỏi mới khó/dễ hơn.
+4. Dùng cùng một test set giúp phép so sánh công bằng: khác biệt metric chỉ đến từ trạng thái hệ thống (baseline, dữ liệu/index bị corrupt, hay bản đã repair), không phải do câu hỏi dễ hoặc khó khác nhau. Nhờ vậy có thể xác định mức suy giảm do corruption và kiểm chứng repair có thực sự khôi phục chất lượng thay vì chỉ tình cờ đạt điểm tốt trên một tập khác.
 
-5. Tiêu chí Repair: Thành công khi Bảng báo cáo đánh giá (Artifact) cho thấy các chỉ số đo lường (Metrics như Hit Rate, MRR) phục hồi lại bằng hoặc vượt mức chuẩn ban đầu (Baseline).
+5. Repair thành công khi artifact sau sửa cho thấy pipeline đã được khôi phục — ví dụ index được rebuild/cập nhật, báo cáo kiểm tra chất lượng không còn lỗi liên quan và log chạy evaluation hoàn tất. Về metric, retrieval trên cùng evaluation set phải phục hồi về mức baseline hoặc đạt ngưỡng chấp nhận đã đặt ra (như Recall@k/Hit@k); answer-quality score cũng phải đạt ngưỡng tương ứng và không còn lỗi do document ID, metadata hay context bị hỏng. Cần xem đồng thời artifact và metric, vì chỉ có index mới mà metric không phục hồi thì repair chưa được chứng minh là thành công.
 
 ## 8. Cam kết của thành viên
 

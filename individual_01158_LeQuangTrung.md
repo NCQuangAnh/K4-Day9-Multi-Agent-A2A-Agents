@@ -89,27 +89,25 @@ python -c "import json;print(sum(1 for l in open('logging/trace.jsonl',encoding=
 
 ## 7. Hiểu biết về luồng end-to-end
 
-> Ghi chú: 5 câu hỏi in sẵn trong mẫu (Crossref, vector index, retrieval quality,
-> corrupted/repaired test set) thuộc về bài lab RAG, không áp dụng cho bài
-> multi-agent này. Dưới đây trả lời các câu hỏi tương đương cho đúng bài lab.
+Nội dung mục này trả lời 5 câu hỏi end-to-end của bài lab RAG.
 
-1. Dữ liệu đi từ 9 file CSV Olist đến output JSON như thế nào?
-2. Evidence ID được dùng để ràng buộc kết luận vào dữ liệu gốc ra sao?
-3. Verifier khác Policy Agent ở điểm nào trong pipeline?
-4. Vì sao rule engine quyết định thay vì LLM?
-5. Một lượt chạy được xem là thành công dựa trên artifact và metric nào?
+1. Dữ liệu đi từ Crossref đến vector index như thế nào?
+2. Evaluation set và ground-truth document IDs dùng để đo retrieval/answer quality ra sao?
+3. Quality checks khác freshness monitoring ở điểm nào trong bài lab?
+4. Vì sao phải dùng cùng test set cho baseline, corrupted và repaired?
+5. Repair được xem là thành công dựa trên artifact và metric nào?
 
 **Câu trả lời:**
 
-Một case đi qua 8 chặng. `DataStore` nạp 6/9 CSV cần thiết (bỏ `geolocation` và `order_reviews` vì không field nào của output dùng tới, giảm ~60% khối lượng nạp) và dựng index trong RAM. `run.py` đọc `input/EC_xxx.json`, lấy `claimed_order_id`. Coordinator lập plan rồi fan-out song song tới 4 agent chuyên trách; mỗi agent chỉ được cấp đúng nhóm tool thuộc phạm vi dữ liệu của mình và trả về một `Handoff` gồm fact kèm `source_id`, danh sách fact thiếu/mâu thuẫn, và đề xuất bước tiếp theo. Coordinator gộp 4 handoff thành `EvidenceBundle` — đây là toàn bộ những gì Policy Agent được thấy, vì Policy không có quyền đọc CSV. Policy chạy hai nhánh song song: LLM tự đề xuất `primary_issue`, còn `PolicyEngine` tính kết quả tất định theo `EC_POLICY_V2`; rule engine luôn thắng, bất đồng được ghi vào trace. `Assembler` dựng output đúng schema và cắt theo giới hạn mảng. `Verifier` chạy 10 gate trước khi ghi file; fail thì trả mã gate về Coordinator để chạy lại có mục tiêu.
+1. Pipeline lấy bản ghi học thuật từ Crossref qua API, chuẩn hóa các trường cần tìm kiếm như tiêu đề, abstract, tác giả, năm xuất bản, DOI và URL. Mỗi bản ghi được gán document ID ổn định, làm sạch/chia nhỏ nội dung khi cần, rồi đưa qua embedding model để biến thành vector. Vector được lưu vào vector index cùng metadata và document ID. Khi có câu hỏi, hệ thống embedding câu hỏi, tìm các vector gần nhất và dùng các document được truy hồi làm ngữ cảnh để tạo câu trả lời.
 
-Evidence ID là thứ ràng buộc kết luận vào dữ liệu gốc: mọi `Fact` bắt buộc có `source_id` dựng được từ CSV theo 5 dạng (`order:`, `item:`, `payment:`, `seller:`, `policy:`). Gate 3 của Verifier tra ngược từng ID về `DataStore` — ID không tồn tại thì không có cách nào lọt ra file.
+2. Evaluation set là tập câu hỏi chuẩn để chạy đánh giá lặp lại được. Với mỗi câu hỏi, ground-truth document IDs chỉ ra các tài liệu đáng lẽ phải được truy hồi. Retrieval quality được đo bằng việc các ID đúng có xuất hiện trong top-*k* hay không, ví dụ Recall@k hoặc Hit@k. Answer quality được đánh giá dựa trên việc câu trả lời có đúng, bám vào các tài liệu ground truth và có dẫn chứng phù hợp hay không; retrieval tốt là điều kiện quan trọng nhưng không tự động bảo đảm câu trả lời tốt.
 
-Verifier khác Policy ở chỗ nó không tính lại nghiệp vụ, chỉ kiểm tra tính hợp lệ của output đã dựng: schema, định dạng và sự tồn tại của evidence, giới hạn mảng, null handling, làm tròn, định dạng timestamp, nhất quán giữa refund và `case_status`, thứ tự action và secondary issue. Nó còn cố ý dùng model khác họ với Policy để lỗi không tương quan.
+3. Quality checks kiểm tra chất lượng và tính hợp lệ của dữ liệu/index tại một thời điểm: schema và trường bắt buộc, DOI/document ID, bản ghi trùng, nội dung rỗng, embedding thiếu hoặc metadata không khớp. Freshness monitoring theo dõi dữ liệu có còn mới và pipeline có cập nhật đúng lịch hay không, chẳng hạn thời điểm đồng bộ Crossref gần nhất, độ trễ ingest và số bản ghi mới. Nói ngắn gọn, quality trả lời “dữ liệu có đúng và dùng được không?”, còn freshness trả lời “dữ liệu có đủ mới không?”.
 
-Rule engine quyết định vì việc chấm điểm so khớp giá trị field chính xác: sai một chữ số thập phân hay bịa một evidence ID là mất điểm cứng. LLM đảm nhiệm phần nó làm tốt — điều phối, phát hiện dữ liệu khuyết, kiểm chứng chéo — nhưng không bao giờ được tự tính số.
+4. Dùng cùng một test set giúp phép so sánh công bằng: khác biệt metric chỉ đến từ trạng thái hệ thống (baseline, dữ liệu/index bị corrupt, hay bản đã repair), không phải do câu hỏi dễ hoặc khó khác nhau. Nhờ vậy có thể xác định mức suy giảm do corruption và kiểm chứng repair có thực sự khôi phục chất lượng thay vì chỉ tình cờ đạt điểm tốt trên một tập khác.
 
-Một lượt chạy được coi là thành công khi: `output/` có đúng 50 file, `python run.py --validate` in `SAN SANG NOP` với 0 gate fail, `python check_schema.py` cho 50/50 PASS, `logging/trace.jsonl` ghi đủ 50 `case_start`/`case_end` và 250 handoff, và `logging/metadata.json` có `run_type: official`.
+5. Repair thành công khi artifact sau sửa cho thấy pipeline đã được khôi phục — ví dụ index được rebuild/cập nhật, báo cáo kiểm tra chất lượng không còn lỗi liên quan và log chạy evaluation hoàn tất. Về metric, retrieval trên cùng evaluation set phải phục hồi về mức baseline hoặc đạt ngưỡng chấp nhận đã đặt ra (như Recall@k/Hit@k); answer-quality score cũng phải đạt ngưỡng tương ứng và không còn lỗi do document ID, metadata hay context bị hỏng. Cần xem đồng thời artifact và metric, vì chỉ có index mới mà metric không phục hồi thì repair chưa được chứng minh là thành công.
 
 ## 8. Cam kết của thành viên
 
