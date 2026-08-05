@@ -1,121 +1,47 @@
-# Member Role Report — Day 9: Multi Agent A2A
+## Thông tin cá nhân
 
-> Mỗi thành viên trong nhóm tự hoàn thành mẫu này để báo cáo đúng vai trò, phần việc và mức hiểu của mình. Không sao chép nguyên báo cáo chung hoặc báo cáo của thành viên khác. Thay nội dung trong dấu `[ ]` và xóa các dòng hướng dẫn không cần thiết trước khi nộp.
+| Thông tin | Nội dung |
+| --- | --- |
+| Họ và tên | Vũ Đình Huy |
+| MSSV | 2A202601288 |
+| Lớp | E403 |
+| Vai trò chính | Thiết kế pipeline, đối soát chính sách và kiểm chứng output |
 
-## 1. Thông tin cá nhân
+## Phần việc phụ trách
 
-| Thông tin       | Nội dung     |
-| --------------- | ------------ |
-| Họ và tên       | [Họ và tên]  |
-| MSSV            | [MSSV]       |
-| Khóa/Lớp        | [K4]         |
-| Vai trò chính   | [Vai trò]    |
-| Ngày hoàn thành | [YYYY-MM-DD] |
+| Module | Trách nhiệm | Kết quả bàn giao |
+| --- | --- | --- |
+| `pipeline.py` | Join dữ liệu Olist, tính delivery/payment và áp dụng `EC_POLICY_V2` | 50 JSON trong `output/` |
 
-## 2. Vai trò và phạm vi công việc
 
-### Phần việc sở hữu
+## Cách triển khai
 
-| Module/deliverable | File/hàm phụ trách | Input nhận vào | Output bàn giao   | Trạng thái                            |
-| ------------------ | ------------------ | -------------- | ----------------- | ------------------------------------- |
-| [Phần việc]        | [File/hàm]         | [Input]        | [Output/artifact] | [Hoàn thành/Một phần/Chưa hoàn thành] |
-| [Phần việc]        | [File/hàm]         | [Input]        | [Output/artifact] | [Hoàn thành/Một phần/Chưa hoàn thành] |
+Pipeline nhận `claimed_order_id` từ từng input, sau đó tách dữ liệu thành các
+handoff có cấu trúc: customer history, order/product, payment reconciliation
+và delivery analysis. Policy stage ưu tiên theo `EC_POLICY_V2`: đơn cancelled
+hoặc unavailable đã thanh toán, giao trễ do seller, giao trễ do logistics,
+split payment hợp lệ và cuối cùng là claim giao trễ không được hỗ trợ.
 
-Chỉ nhận ownership cho phần bạn trực tiếp thực hiện. Liên hệ rõ phần việc của bạn với đầu vào, đầu ra và các thành viên phụ thuộc vào phần đó.
+Để tránh false positive, evidence chỉ được tạo từ ID có thể truy vết trực tiếp
+trong CSV: order, item, payment, seller chịu trách nhiệm và policy root cause.
+Verifier kiểm tra tên case, giới hạn số phần tử, confidence và cấu trúc ZIP
+trước khi tạo file nộp.
 
-### Việc hỗ trợ ngoài phạm vi chính
+## Quyết định kỹ thuật
 
-| Hoạt động                 | Thành viên/module được hỗ trợ | Kết quả                 |
-| ------------------------- | ----------------------------- | ----------------------- |
-| [Debug/tích hợp/tài liệu] | [Tên hoặc module]             | [Kết quả và bằng chứng] |
+Tính toán tiền, chênh lệch giao hàng và phân loại policy được giữ theo quy tắc
+xác định thay vì để model sinh số liệu. Cách này giúp mọi giá trị trong output
+đối chiếu được với CSV, đặc biệt cho refund và evidence ID. Lượt tạo output
+hiện tại không gọi model sinh ngôn ngữ; toàn bộ kết quả được tái lập trực tiếp
+từ dữ liệu nguồn và chính sách nghiệp vụ.
 
-## 3. Kết quả theo vai trò
+## Kiểm chứng
 
-| Nhiệm vụ đã thực hiện | File/hàm/artifact liên quan | Kết quả bàn giao          | Cách xác minh   |
-| --------------------- | --------------------------- | ------------------------- | --------------- |
-| [Mô tả cụ thể]        | [Đường dẫn file]            | [Artifact/metrics/report] | [Lệnh/artifact] |
-| [Mô tả cụ thể]        | [Đường dẫn file]            | [Artifact/metrics/report] | [Lệnh/artifact] |
+- `output/` có 50 file từ `EC_001.json` đến `EC_050.json`.
+- `output.zip` có đúng 50 entry `output/EC_001.json` đến `output/EC_050.json`.
 
-Nêu một output cụ thể mà phần việc của bạn tạo ra hoặc giúp xác minh:
 
-[Mô tả artifact, metric, report hoặc kết quả tích hợp.]
+## Cam kết
 
-## 4. Giải thích phần kỹ thuật đã thực hiện
-
-### Vấn đề cần giải quyết
-
-[Phần của bạn giải quyết vấn đề gì trong pipeline?]
-
-### Cách triển khai
-
-[Mô tả thuật toán, quy tắc dữ liệu, orchestration hoặc quyết định chính. Không chỉ chép lại tên hàm.]
-
-### Input, output và contract
-
-| Thành phần              | Mô tả                                  |
-| ----------------------- | -------------------------------------- |
-| Input                   | [Schema, artifact hoặc tham số]        |
-| Output                  | [Schema, artifact hoặc giá trị trả về] |
-| Module phụ thuộc        | [Module/file liên quan]                |
-| Module sử dụng output   | [Module/file liên quan]                |
-| Điều kiện lỗi cần xử lý | [Trường hợp thực tế]                   |
-
-### Cách xác minh
-
-```bash
-[Ghi lệnh thực tế đã chạy]
-```
-
-- **Kết quả mong đợi:** [Mô tả.]
-- **Kết quả thực tế:** [Mô tả.]
-- **Artifact/log:** [Đường dẫn; không chứa secret.]
-
-## 5. Một quyết định kỹ thuật quan trọng
-
-- **Bối cảnh:** [Vấn đề hoặc lựa chọn cần quyết định.]
-- **Các phương án đã cân nhắc:** [Ít nhất hai phương án.]
-- **Phương án đã chọn:** [Lựa chọn.]
-- **Lý do:** [Trade-off về correctness, data quality, reproducibility, cost hoặc độ phức tạp.]
-- **Bằng chứng quyết định phù hợp:** [Metric, artifact hoặc kết quả thử nghiệm.]
-
-## 6. Một lỗi hoặc blocker đã xử lý
-
-- **Triệu chứng/lỗi nguyên văn:** [Che toàn bộ secret trước khi ghi.]
-- **Lệnh hoặc bước tái hiện:** [Lệnh/bước.]
-- **Nguyên nhân gốc:** [Root cause, không chỉ mô tả triệu chứng.]
-- **Cách xử lý:** [Thay đổi cụ thể.]
-- **Cách xác minh sau khi sửa:** [Lệnh và kết quả.]
-- **Điều học được:** [Bài học kỹ thuật.]
-
-Nếu chưa xử lý xong:
-
-- **Phạm vi bị ảnh hưởng:** [Module/artifact.]
-- **Những gì đã loại trừ:** [Các giả thuyết đã kiểm tra.]
-- **Bước tiếp theo:** [Hành động có thể kiểm chứng.]
-
-## 7. Hiểu biết về luồng end-to-end
-
-Giải thích ngắn gọn bằng lời của bạn:
-
-1. Dữ liệu đi từ Crossref đến vector index như thế nào?
-2. Evaluation set và ground-truth document IDs dùng để đo retrieval/answer quality ra sao?
-3. Quality checks khác freshness monitoring ở điểm nào trong bài lab?
-4. Vì sao phải dùng cùng test set cho baseline, corrupted và repaired?
-5. Repair được xem là thành công dựa trên artifact và metric nào?
-
-**Câu trả lời:**
-
-[Viết câu trả lời tại đây.]
-
-## 8. Cam kết của thành viên
-
-Đánh dấu sau khi tự kiểm tra:
-
-- [ ] Nội dung báo cáo phản ánh đúng phần việc và mức hiểu của tôi.
-- [ ] Tôi có thể giải thích luồng end-to-end, không chỉ module mình phụ trách.
-- [ ] Tôi không ghi “đã chạy thành công” cho phần chưa được kiểm chứng.
-- [ ] Báo cáo không chứa `.env`, API key, token hoặc secret.
-- [ ] Báo cáo này không phải bản sao nguyên văn của báo cáo nhóm hoặc báo cáo thành viên khác.
-
-**Họ và tên:** [Họ và tên]
-**Ngày xác nhận:** [YYYY-MM-DD]
+Tôi đã rà soát các artifact được nêu trong báo cáo, không đưa API key hoặc
+secret vào source/ZIP, và có thể giải thích luồng dữ liệu từ input đến output.

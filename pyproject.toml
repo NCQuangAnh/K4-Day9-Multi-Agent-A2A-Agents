@@ -1,0 +1,10 @@
+[project]
+name = "k4-day9-multi-agent-a2a"
+version = "0.1.0"
+description = "Pipeline for Olist dispute resolution multi-agent evaluation"
+readme = "README.md"
+requires-python = ">=3.9"
+
+[project.dependencies]
+pandas = "*"
+numpy = "*"

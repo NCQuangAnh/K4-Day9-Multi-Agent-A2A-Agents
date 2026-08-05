@@ -1,0 +1,9 @@
+{
+  "model_name": "LLaMA 2 7B",
+  "model_size": "7B",
+  "framework": "local",
+  "runtime": "Python 3.12",
+  "inference_mode": "local",
+  "api_key_required": false,
+  "notes": "Run the model locally with downloaded weights. An API key is only needed if you switch to a cloud provider or hosted inference service."
+}
