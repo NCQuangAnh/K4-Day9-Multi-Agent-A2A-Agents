@@ -35,7 +35,6 @@
       "c686d4fd1e845efd1b98db8220f0af3b"
     ],
     "category_names": [
-      "cama_mesa_banho",
       "cama_mesa_banho"
     ]
   },
@@ -82,7 +81,7 @@
     "responsible_parties": [
       {
         "party_type": "logistics_provider",
-        "party_id": "logistics_provider"
+        "party_id": "LOGISTICS_PROVIDER"
       }
     ]
   },
@@ -99,6 +98,8 @@
   },
   "resolution_actions": [
     "refund_freight",
-    "review_carrier_delay"
+    "review_carrier_delay",
+    "verify_refund_completion",
+    "coordinate_multi_seller_case"
   ]
 }

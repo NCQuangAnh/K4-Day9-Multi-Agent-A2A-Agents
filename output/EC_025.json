@@ -3,7 +3,8 @@
   "case_assessment": {
     "primary_issue": "unsupported_late_claim",
     "secondary_issues": [
-      "multi_item_order"
+      "multi_item_order",
+      "repeat_customer"
     ],
     "case_status": "no_action",
     "confidence": 0.92
@@ -25,15 +26,15 @@
   },
   "customer_context": {
     "customer_unique_id": "4b979b432abe14a88cd0cde893952677",
-    "related_order_ids": []
+    "related_order_ids": [
+      "4e3cf72d676f793f15859c9ae34be2ad"
+    ]
   },
   "product_context": {
     "product_ids": [
-      "0bcc3eeca39e1064258aa1e932269894",
       "0bcc3eeca39e1064258aa1e932269894"
     ],
     "category_names": [
-      "ferramentas_jardim",
       "ferramentas_jardim"
     ]
   },
@@ -43,12 +44,6 @@
     "carrier_handoff_at": "2017-10-09 21:24:10",
     "delivery_variance_hours": -342.28,
     "seller_handoff_analysis": [
-      {
-        "seller_id": "1f50f920176fa81dab994f9023523100",
-        "shipping_limit_at": "2017-10-10 18:28:22",
-        "handoff_variance_hours": -21.07,
-        "late_handoff": false
-      },
       {
         "seller_id": "1f50f920176fa81dab994f9023523100",
         "shipping_limit_at": "2017-10-10 18:28:22",

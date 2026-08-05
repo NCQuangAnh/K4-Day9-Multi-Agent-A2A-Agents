@@ -40,8 +40,6 @@
       "8b45810da2ef9860496d56f62435fc40"
     ],
     "category_names": [
-      "cama_mesa_banho",
-      "cama_mesa_banho",
       "cama_mesa_banho"
     ]
   },
@@ -108,6 +106,7 @@
     "recommended_refund_brl": 0.0
   },
   "resolution_actions": [
-    "explain_valid_split_payment"
+    "explain_valid_split_payment",
+    "coordinate_multi_seller_case"
   ]
 }

@@ -3,7 +3,8 @@
   "case_assessment": {
     "primary_issue": "late_delivery_seller",
     "secondary_issues": [
-      "multi_item_order"
+      "multi_item_order",
+      "repeat_customer"
     ],
     "case_status": "action_required",
     "confidence": 0.92
@@ -26,17 +27,15 @@
   },
   "customer_context": {
     "customer_unique_id": "0dc81b520ef7db9cb44bb075e129dcf8",
-    "related_order_ids": []
+    "related_order_ids": [
+      "1fc147ecded099d8acf876cfaf66f731"
+    ]
   },
   "product_context": {
     "product_ids": [
-      "3eef0cb94ba82de806bb30ab743c7655",
-      "3eef0cb94ba82de806bb30ab743c7655",
       "3eef0cb94ba82de806bb30ab743c7655"
     ],
     "category_names": [
-      "moveis_escritorio",
-      "moveis_escritorio",
       "moveis_escritorio"
     ]
   },
@@ -51,23 +50,9 @@
         "shipping_limit_at": "2018-02-13 04:30:43",
         "handoff_variance_hours": 156.8,
         "late_handoff": true
-      },
-      {
-        "seller_id": "7c67e1448b00f6e969d365cea6b010ab",
-        "shipping_limit_at": "2018-02-13 04:30:43",
-        "handoff_variance_hours": 156.8,
-        "late_handoff": true
-      },
-      {
-        "seller_id": "7c67e1448b00f6e969d365cea6b010ab",
-        "shipping_limit_at": "2018-02-13 04:30:43",
-        "handoff_variance_hours": 156.8,
-        "late_handoff": true
       }
     ],
     "late_handoff_seller_ids": [
-      "7c67e1448b00f6e969d365cea6b010ab",
-      "7c67e1448b00f6e969d365cea6b010ab",
       "7c67e1448b00f6e969d365cea6b010ab"
     ]
   },
@@ -94,14 +79,6 @@
       {
         "party_type": "seller",
         "party_id": "7c67e1448b00f6e969d365cea6b010ab"
-      },
-      {
-        "party_type": "seller",
-        "party_id": "7c67e1448b00f6e969d365cea6b010ab"
-      },
-      {
-        "party_type": "seller",
-        "party_id": "7c67e1448b00f6e969d365cea6b010ab"
       }
     ]
   },
@@ -112,8 +89,6 @@
     "item:4f3f48cbedce0c316c688af6fc7e9c56:3",
     "payment:4f3f48cbedce0c316c688af6fc7e9c56:1",
     "seller:7c67e1448b00f6e969d365cea6b010ab",
-    "seller:7c67e1448b00f6e969d365cea6b010ab",
-    "seller:7c67e1448b00f6e969d365cea6b010ab",
     "policy:SELLER_HANDOFF_AFTER_LIMIT"
   ],
   "financial_resolution": {
@@ -122,6 +97,7 @@
   },
   "resolution_actions": [
     "refund_freight",
-    "review_seller_handoff"
+    "review_seller_handoff",
+    "verify_refund_completion"
   ]
 }

@@ -37,7 +37,6 @@
       "c1c1d3afbe6a5ab7a534f7ea20e09b8e"
     ],
     "category_names": [
-      "esporte_lazer",
       "esporte_lazer"
     ]
   },
@@ -97,6 +96,7 @@
     "recommended_refund_brl": 0.0
   },
   "resolution_actions": [
-    "explain_valid_split_payment"
+    "explain_valid_split_payment",
+    "coordinate_multi_seller_case"
   ]
 }

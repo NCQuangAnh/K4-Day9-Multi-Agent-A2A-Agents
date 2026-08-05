@@ -2,7 +2,9 @@
   "case_id": "EC_012",
   "case_assessment": {
     "primary_issue": "unavailable_order_paid",
-    "secondary_issues": [],
+    "secondary_issues": [
+      "repeat_customer"
+    ],
     "case_status": "action_required",
     "confidence": 0.92
   },
@@ -18,7 +20,9 @@
   },
   "customer_context": {
     "customer_unique_id": "0a5fab743da859b3f10a409bbb132a5a",
-    "related_order_ids": []
+    "related_order_ids": [
+      "dee008fbad3f3868874dd10ab5977b88"
+    ]
   },
   "product_context": {
     "product_ids": [],
@@ -54,7 +58,7 @@
     "responsible_parties": [
       {
         "party_type": "platform",
-        "party_id": "platform"
+        "party_id": "OLIST_PLATFORM"
       }
     ]
   },
@@ -68,7 +72,7 @@
     "recommended_refund_brl": 226.23
   },
   "resolution_actions": [
-    "refund_freight",
-    "verify_payment_allocation"
+    "issue_full_refund",
+    "verify_refund_completion"
   ]
 }

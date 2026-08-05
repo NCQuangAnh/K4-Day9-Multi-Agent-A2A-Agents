@@ -49,12 +49,6 @@
         "shipping_limit_at": "2018-01-22 21:11:44",
         "handoff_variance_hours": -97.97,
         "late_handoff": false
-      },
-      {
-        "seller_id": "5b581417df4480f632484ba681e53944",
-        "shipping_limit_at": "2018-01-22 21:11:44",
-        "handoff_variance_hours": -97.97,
-        "late_handoff": false
       }
     ],
     "late_handoff_seller_ids": []
@@ -81,7 +75,7 @@
     "responsible_parties": [
       {
         "party_type": "logistics_provider",
-        "party_id": "logistics_provider"
+        "party_id": "LOGISTICS_PROVIDER"
       }
     ]
   },
@@ -98,6 +92,7 @@
   },
   "resolution_actions": [
     "refund_freight",
-    "review_carrier_delay"
+    "review_carrier_delay",
+    "verify_refund_completion"
   ]
 }

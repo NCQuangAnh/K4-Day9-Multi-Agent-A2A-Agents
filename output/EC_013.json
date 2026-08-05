@@ -35,7 +35,6 @@
       "ce066f4a83649651549d717c9b566816"
     ],
     "category_names": [
-      "esporte_lazer",
       "esporte_lazer"
     ]
   },
@@ -50,16 +49,9 @@
         "shipping_limit_at": "2017-11-21 17:55:28",
         "handoff_variance_hours": 2.34,
         "late_handoff": true
-      },
-      {
-        "seller_id": "4d6d651bd7684af3fffabd5f08d12e5a",
-        "shipping_limit_at": "2017-11-21 17:55:28",
-        "handoff_variance_hours": 2.34,
-        "late_handoff": true
       }
     ],
     "late_handoff_seller_ids": [
-      "4d6d651bd7684af3fffabd5f08d12e5a",
       "4d6d651bd7684af3fffabd5f08d12e5a"
     ]
   },
@@ -87,10 +79,6 @@
       {
         "party_type": "seller",
         "party_id": "4d6d651bd7684af3fffabd5f08d12e5a"
-      },
-      {
-        "party_type": "seller",
-        "party_id": "4d6d651bd7684af3fffabd5f08d12e5a"
       }
     ]
   },
@@ -101,7 +89,6 @@
     "payment:97e8d3eb8f48e3610beed991e5f32296:1",
     "payment:97e8d3eb8f48e3610beed991e5f32296:2",
     "seller:4d6d651bd7684af3fffabd5f08d12e5a",
-    "seller:4d6d651bd7684af3fffabd5f08d12e5a",
     "policy:SELLER_HANDOFF_AFTER_LIMIT"
   ],
   "financial_resolution": {
@@ -110,6 +97,8 @@
   },
   "resolution_actions": [
     "refund_freight",
-    "review_seller_handoff"
+    "review_seller_handoff",
+    "verify_refund_completion",
+    "verify_payment_allocation"
   ]
 }

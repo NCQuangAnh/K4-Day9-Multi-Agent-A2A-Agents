@@ -35,7 +35,6 @@
       "a1a97164f38cfb98511eb68e6b40ad94"
     ],
     "category_names": [
-      "informatica_acessorios",
       "informatica_acessorios"
     ]
   },
@@ -93,6 +92,7 @@
     "recommended_refund_brl": 0.0
   },
   "resolution_actions": [
-    "reject_late_refund"
+    "reject_late_refund",
+    "coordinate_multi_seller_case"
   ]
 }

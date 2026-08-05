@@ -3,7 +3,8 @@
   "case_assessment": {
     "primary_issue": "late_delivery_logistics",
     "secondary_issues": [
-      "multi_item_order"
+      "multi_item_order",
+      "repeat_customer"
     ],
     "case_status": "action_required",
     "confidence": 0.92
@@ -26,17 +27,15 @@
   },
   "customer_context": {
     "customer_unique_id": "b08b68bac767c3269e827f822d308182",
-    "related_order_ids": []
+    "related_order_ids": [
+      "c53b15af645d91a057ddba9d0e1f21c7"
+    ]
   },
   "product_context": {
     "product_ids": [
-      "727a46f0b58a9ef165af9f7ebcfebfa9",
-      "727a46f0b58a9ef165af9f7ebcfebfa9",
       "727a46f0b58a9ef165af9f7ebcfebfa9"
     ],
     "category_names": [
-      "esporte_lazer",
-      "esporte_lazer",
       "esporte_lazer"
     ]
   },
@@ -46,18 +45,6 @@
     "carrier_handoff_at": "2018-02-21 18:48:47",
     "delivery_variance_hours": 371.97,
     "seller_handoff_analysis": [
-      {
-        "seller_id": "e9779976487b77c6d4ac45f75ec7afe9",
-        "shipping_limit_at": "2018-02-22 21:26:46",
-        "handoff_variance_hours": -26.63,
-        "late_handoff": false
-      },
-      {
-        "seller_id": "e9779976487b77c6d4ac45f75ec7afe9",
-        "shipping_limit_at": "2018-02-22 21:26:46",
-        "handoff_variance_hours": -26.63,
-        "late_handoff": false
-      },
       {
         "seller_id": "e9779976487b77c6d4ac45f75ec7afe9",
         "shipping_limit_at": "2018-02-22 21:26:46",
@@ -89,7 +76,7 @@
     "responsible_parties": [
       {
         "party_type": "logistics_provider",
-        "party_id": "logistics_provider"
+        "party_id": "LOGISTICS_PROVIDER"
       }
     ]
   },
@@ -107,6 +94,7 @@
   },
   "resolution_actions": [
     "refund_freight",
-    "review_carrier_delay"
+    "review_carrier_delay",
+    "verify_refund_completion"
   ]
 }

@@ -3,7 +3,8 @@
   "case_assessment": {
     "primary_issue": "unsupported_late_claim",
     "secondary_issues": [
-      "multi_item_order"
+      "multi_item_order",
+      "repeat_customer"
     ],
     "case_status": "no_action",
     "confidence": 0.92
@@ -25,7 +26,9 @@
   },
   "customer_context": {
     "customer_unique_id": "bbf65e7823171a84e70a495dd6c34ceb",
-    "related_order_ids": []
+    "related_order_ids": [
+      "65bbd0719855fe808bb19f62dfa9f42c"
+    ]
   },
   "product_context": {
     "product_ids": [
@@ -33,7 +36,6 @@
       "43b54d1fc56ff394092a3dff6be2d39f"
     ],
     "category_names": [
-      "beleza_saude",
       "beleza_saude"
     ]
   },
@@ -43,12 +45,6 @@
     "carrier_handoff_at": "2018-06-15 14:15:00",
     "delivery_variance_hours": -166.52,
     "seller_handoff_analysis": [
-      {
-        "seller_id": "c70c1b0d8ca86052f45a432a38b73958",
-        "shipping_limit_at": "2018-06-18 07:57:36",
-        "handoff_variance_hours": -65.71,
-        "late_handoff": false
-      },
       {
         "seller_id": "c70c1b0d8ca86052f45a432a38b73958",
         "shipping_limit_at": "2018-06-18 07:57:36",

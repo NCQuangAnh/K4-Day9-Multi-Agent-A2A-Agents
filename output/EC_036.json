@@ -37,7 +37,6 @@
       "188d0b148e6d1c86faffe0d73c3f2dad"
     ],
     "category_names": [
-      "moveis_decoracao",
       "moveis_decoracao"
     ]
   },
@@ -97,6 +96,7 @@
     "recommended_refund_brl": 0.0
   },
   "resolution_actions": [
-    "explain_valid_split_payment"
+    "explain_valid_split_payment",
+    "coordinate_multi_seller_case"
   ]
 }

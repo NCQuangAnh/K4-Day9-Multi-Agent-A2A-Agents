@@ -29,11 +29,9 @@
   },
   "product_context": {
     "product_ids": [
-      "dc2410804cf782c5d87dbcd201b74e9b",
       "dc2410804cf782c5d87dbcd201b74e9b"
     ],
     "category_names": [
-      "informatica_acessorios",
       "informatica_acessorios"
     ]
   },
@@ -67,7 +65,7 @@
     "responsible_parties": [
       {
         "party_type": "platform",
-        "party_id": "platform"
+        "party_id": "OLIST_PLATFORM"
       }
     ]
   },
@@ -83,7 +81,7 @@
     "recommended_refund_brl": 333.62
   },
   "resolution_actions": [
-    "refund_freight",
-    "verify_payment_allocation"
+    "issue_full_refund",
+    "verify_refund_completion"
   ]
 }

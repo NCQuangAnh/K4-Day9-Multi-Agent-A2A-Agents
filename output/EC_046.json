@@ -31,11 +31,9 @@
   },
   "product_context": {
     "product_ids": [
-      "c857b96593773e940454e76efa8eabb3",
       "c857b96593773e940454e76efa8eabb3"
     ],
     "category_names": [
-      "moveis_decoracao",
       "moveis_decoracao"
     ]
   },
@@ -50,16 +48,9 @@
         "shipping_limit_at": "2017-05-16 16:30:12",
         "handoff_variance_hours": 17.56,
         "late_handoff": true
-      },
-      {
-        "seller_id": "cca3071e3e9bb7d12640c9fbe2301306",
-        "shipping_limit_at": "2017-05-16 16:30:12",
-        "handoff_variance_hours": 17.56,
-        "late_handoff": true
       }
     ],
     "late_handoff_seller_ids": [
-      "cca3071e3e9bb7d12640c9fbe2301306",
       "cca3071e3e9bb7d12640c9fbe2301306"
     ]
   },
@@ -87,10 +78,6 @@
       {
         "party_type": "seller",
         "party_id": "cca3071e3e9bb7d12640c9fbe2301306"
-      },
-      {
-        "party_type": "seller",
-        "party_id": "cca3071e3e9bb7d12640c9fbe2301306"
       }
     ]
   },
@@ -101,7 +88,6 @@
     "payment:0e3ec3c17b64c6cc7bc01bba21e7afdf:2",
     "payment:0e3ec3c17b64c6cc7bc01bba21e7afdf:1",
     "seller:cca3071e3e9bb7d12640c9fbe2301306",
-    "seller:cca3071e3e9bb7d12640c9fbe2301306",
     "policy:SELLER_HANDOFF_AFTER_LIMIT"
   ],
   "financial_resolution": {
@@ -110,6 +96,8 @@
   },
   "resolution_actions": [
     "refund_freight",
-    "review_seller_handoff"
+    "review_seller_handoff",
+    "verify_refund_completion",
+    "verify_payment_allocation"
   ]
 }

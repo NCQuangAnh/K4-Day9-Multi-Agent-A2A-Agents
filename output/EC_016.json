@@ -3,7 +3,8 @@
   "case_assessment": {
     "primary_issue": "late_delivery_logistics",
     "secondary_issues": [
-      "split_payment"
+      "split_payment",
+      "repeat_customer"
     ],
     "case_status": "action_required",
     "confidence": 0.92
@@ -26,7 +27,9 @@
   },
   "customer_context": {
     "customer_unique_id": "7b08fc11e1aacd85ef2845c12a9ddb81",
-    "related_order_ids": []
+    "related_order_ids": [
+      "4c8eac76de32572cebc64aca0f263e2a"
+    ]
   },
   "product_context": {
     "product_ids": [
@@ -75,7 +78,7 @@
     "responsible_parties": [
       {
         "party_type": "logistics_provider",
-        "party_id": "logistics_provider"
+        "party_id": "LOGISTICS_PROVIDER"
       }
     ]
   },
@@ -93,6 +96,8 @@
   },
   "resolution_actions": [
     "refund_freight",
-    "review_carrier_delay"
+    "review_carrier_delay",
+    "verify_refund_completion",
+    "verify_payment_allocation"
   ]
 }

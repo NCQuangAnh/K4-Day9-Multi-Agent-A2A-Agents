@@ -3,7 +3,8 @@
   "case_assessment": {
     "primary_issue": "late_delivery_seller",
     "secondary_issues": [
-      "multi_item_order"
+      "multi_item_order",
+      "repeat_customer"
     ],
     "case_status": "action_required",
     "confidence": 0.92
@@ -25,15 +26,16 @@
   },
   "customer_context": {
     "customer_unique_id": "e3301490c373db9263c15a73172d0c6f",
-    "related_order_ids": []
+    "related_order_ids": [
+      "3ce16e50c1842ad30631811796a31afc",
+      "c7c28a159a907d1d0ff580856daffa72"
+    ]
   },
   "product_context": {
     "product_ids": [
-      "f4d18451e6c35980e6898e36dfd6fb55",
       "f4d18451e6c35980e6898e36dfd6fb55"
     ],
     "category_names": [
-      "cama_mesa_banho",
       "cama_mesa_banho"
     ]
   },
@@ -48,16 +50,9 @@
         "shipping_limit_at": "2017-04-27 12:36:44",
         "handoff_variance_hours": 121.29,
         "late_handoff": true
-      },
-      {
-        "seller_id": "4a3ca9315b744ce9f8e9374361493884",
-        "shipping_limit_at": "2017-04-27 12:36:44",
-        "handoff_variance_hours": 121.29,
-        "late_handoff": true
       }
     ],
     "late_handoff_seller_ids": [
-      "4a3ca9315b744ce9f8e9374361493884",
       "4a3ca9315b744ce9f8e9374361493884"
     ]
   },
@@ -84,10 +79,6 @@
       {
         "party_type": "seller",
         "party_id": "4a3ca9315b744ce9f8e9374361493884"
-      },
-      {
-        "party_type": "seller",
-        "party_id": "4a3ca9315b744ce9f8e9374361493884"
       }
     ]
   },
@@ -97,7 +88,6 @@
     "item:a4e90af1c84c4455c7c4c65293ae2c78:2",
     "payment:a4e90af1c84c4455c7c4c65293ae2c78:1",
     "seller:4a3ca9315b744ce9f8e9374361493884",
-    "seller:4a3ca9315b744ce9f8e9374361493884",
     "policy:SELLER_HANDOFF_AFTER_LIMIT"
   ],
   "financial_resolution": {
@@ -106,6 +96,7 @@
   },
   "resolution_actions": [
     "refund_freight",
-    "review_seller_handoff"
+    "review_seller_handoff",
+    "verify_refund_completion"
   ]
 }

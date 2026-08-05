@@ -32,17 +32,9 @@
   },
   "product_context": {
     "product_ids": [
-      "c3a52053718435a35e070b991ff546ec",
-      "c3a52053718435a35e070b991ff546ec",
-      "c3a52053718435a35e070b991ff546ec",
-      "c3a52053718435a35e070b991ff546ec",
       "c3a52053718435a35e070b991ff546ec"
     ],
     "category_names": [
-      "utilidades_domesticas",
-      "utilidades_domesticas",
-      "utilidades_domesticas",
-      "utilidades_domesticas",
       "utilidades_domesticas"
     ]
   },
@@ -76,7 +68,7 @@
     "responsible_parties": [
       {
         "party_type": "platform",
-        "party_id": "platform"
+        "party_id": "OLIST_PLATFORM"
       }
     ]
   },
@@ -95,7 +87,7 @@
     "recommended_refund_brl": 144.3
   },
   "resolution_actions": [
-    "refund_freight",
-    "verify_payment_allocation"
+    "issue_full_refund",
+    "verify_refund_completion"
   ]
 }

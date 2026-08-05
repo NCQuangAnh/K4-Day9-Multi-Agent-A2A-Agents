@@ -3,7 +3,8 @@
   "case_assessment": {
     "primary_issue": "late_delivery_logistics",
     "secondary_issues": [
-      "multi_item_order"
+      "multi_item_order",
+      "repeat_customer"
     ],
     "case_status": "action_required",
     "confidence": 0.92
@@ -25,15 +26,15 @@
   },
   "customer_context": {
     "customer_unique_id": "e11a1b428e150830944b665cb6b2d5da",
-    "related_order_ids": []
+    "related_order_ids": [
+      "1534abac962760cbb058568f7dffc105"
+    ]
   },
   "product_context": {
     "product_ids": [
-      "c4baedd846ed09b85f78a781b522f126",
       "c4baedd846ed09b85f78a781b522f126"
     ],
     "category_names": [
-      "ferramentas_jardim",
       "ferramentas_jardim"
     ]
   },
@@ -43,12 +44,6 @@
     "carrier_handoff_at": "2017-12-20 08:55:28",
     "delivery_variance_hours": 475.89,
     "seller_handoff_analysis": [
-      {
-        "seller_id": "a1043bafd471dff536d0c462352beb48",
-        "shipping_limit_at": "2017-12-22 21:11:14",
-        "handoff_variance_hours": -60.26,
-        "late_handoff": false
-      },
       {
         "seller_id": "a1043bafd471dff536d0c462352beb48",
         "shipping_limit_at": "2017-12-22 21:11:14",
@@ -80,7 +75,7 @@
     "responsible_parties": [
       {
         "party_type": "logistics_provider",
-        "party_id": "logistics_provider"
+        "party_id": "LOGISTICS_PROVIDER"
       }
     ]
   },
@@ -97,6 +92,7 @@
   },
   "resolution_actions": [
     "refund_freight",
-    "review_carrier_delay"
+    "review_carrier_delay",
+    "verify_refund_completion"
   ]
 }

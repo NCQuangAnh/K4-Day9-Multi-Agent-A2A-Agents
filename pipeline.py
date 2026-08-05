@@ -66,8 +66,15 @@ def load_data() -> dict[str, Any]:
     payments = load_csv("payments")
     products = load_csv("products")
     sellers = load_csv("sellers")
+    customers_by_id = {row["customer_id"]: row for row in customers}
+    orders_by_customer_unique: dict[str, list[dict[str, str]]] = {}
+    for order in orders:
+        customer = customers_by_id.get(order["customer_id"])
+        if customer:
+            orders_by_customer_unique.setdefault(customer["customer_unique_id"], []).append(order)
     return {
         "customers": index_by(customers, "customer_id"),
+        "orders_by_customer_unique": orders_by_customer_unique,
         "orders": index_by(orders, "order_id"),
         "items": index_by(items, "order_id"),
         "payments": index_by(payments, "order_id"),
@@ -102,21 +109,21 @@ def build_evidence(order_id: str, items: list[dict[str, str]], payments: list[di
     return evidence[:20]
 
 
-def select_primary_issue(order: dict[str, str], amount_info: dict[str, Any], delivery_diff_hours: float | None, late_handoff: bool, late_handoff_sellers: list[str], payments: list[dict[str, str]]) -> tuple[str, str, list[str], list[str], list[str]]:
+def select_primary_issue(order: dict[str, str], amount_info: dict[str, Any], delivery_diff_hours: float | None, late_handoff: bool, late_handoff_sellers: list[str], payments: list[dict[str, str]]) -> tuple[str, str, list[dict[str, str]], str]:
     status = order.get("order_status")
     total_payment = amount_info["payment_total_brl"] or Decimal(0)
     expected_total = amount_info["expected_total_brl"]
     if status == "canceled" and total_payment > 0:
-        return "canceled_order_paid", "issue_full_refund", ["platform"], ["refund_freight"], ["ORDER_CANCELED_AFTER_PAYMENT"]
+        return "canceled_order_paid", "issue_full_refund", [{"party_type": "platform", "party_id": "OLIST_PLATFORM"}], "ORDER_CANCELED_AFTER_PAYMENT"
     if status == "unavailable" and total_payment > 0:
-        return "unavailable_order_paid", "issue_full_refund", ["platform"], ["refund_freight"], ["ORDER_UNAVAILABLE_AFTER_PAYMENT"]
+        return "unavailable_order_paid", "issue_full_refund", [{"party_type": "platform", "party_id": "OLIST_PLATFORM"}], "ORDER_UNAVAILABLE_AFTER_PAYMENT"
     if delivery_diff_hours is not None and delivery_diff_hours > 0 and late_handoff:
-        return "late_delivery_seller", "refund_freight", late_handoff_sellers or [], ["refund_freight"], ["SELLER_HANDOFF_AFTER_LIMIT"]
+        return "late_delivery_seller", "refund_freight", [{"party_type": "seller", "party_id": seller_id} for seller_id in late_handoff_sellers], "SELLER_HANDOFF_AFTER_LIMIT"
     if delivery_diff_hours is not None and delivery_diff_hours > 0:
-        return "late_delivery_logistics", "refund_freight", ["logistics_provider"], ["refund_freight"], ["CARRIER_DELIVERED_AFTER_ESTIMATE"]
+        return "late_delivery_logistics", "refund_freight", [{"party_type": "logistics_provider", "party_id": "LOGISTICS_PROVIDER"}], "CARRIER_DELIVERED_AFTER_ESTIMATE"
     if len(payments) >= 2 and expected_total is not None and amount_info["reconciled"]:
-        return "valid_split_payment", "explain_valid_split_payment", [], ["explain_valid_split_payment"], ["MULTIPLE_PAYMENTS_RECONCILED"]
-    return "unsupported_late_claim", "reject_late_refund", [], ["reject_late_refund"], ["DELIVERY_WITHIN_ESTIMATE"]
+        return "valid_split_payment", "explain_valid_split_payment", [], "MULTIPLE_PAYMENTS_RECONCILED"
+    return "unsupported_late_claim", "reject_late_refund", [], "DELIVERY_WITHIN_ESTIMATE"
 
 
 def build_secondary_issues(items: list[dict[str, str]], payments: list[dict[str, str]], customer_orders: list[dict[str, str]], products: dict[str, dict[str, str]]) -> list[str]:
@@ -127,7 +134,7 @@ def build_secondary_issues(items: list[dict[str, str]], payments: list[dict[str,
         issues.append("multi_seller_order")
     if len(payments) >= 2:
         issues.append("split_payment")
-    if len({o["order_id"] for o in customer_orders}) >= 2:
+    if customer_orders:
         issues.append("repeat_customer")
     if len({products[item["product_id"]]["product_category_name"] for item in items if item["product_id"] in products}) >= 2:
         issues.append("multiple_categories")
@@ -147,19 +154,24 @@ def build_delivery_analysis(order: dict[str, str], items: list[dict[str, str]]) 
     seller_analysis = []
     late_sellers: list[str] = []
     if items:
+        by_seller: dict[str, list[dict[str, str]]] = {}
         for item in items:
-            shipping_limit = parse_datetime(item.get("shipping_limit_date"))
+            by_seller.setdefault(item["seller_id"], []).append(item)
+        for seller_id, seller_items in by_seller.items():
+            shipping_limits = [item["shipping_limit_date"] for item in seller_items if parse_datetime(item.get("shipping_limit_date"))]
+            shipping_limit_at = min(shipping_limits, key=lambda value: parse_datetime(value) or datetime.max) if shipping_limits else None
+            shipping_limit = parse_datetime(shipping_limit_at)
             if carrier_dt and shipping_limit:
                 handoff_var = round((carrier_dt - shipping_limit).total_seconds() / 3600, 2)
                 late = handoff_var > 0
                 seller_analysis.append({
-                    "seller_id": item["seller_id"],
-                    "shipping_limit_at": item.get("shipping_limit_date"),
+                    "seller_id": seller_id,
+                    "shipping_limit_at": shipping_limit_at,
                     "handoff_variance_hours": handoff_var,
                     "late_handoff": late,
                 })
                 if late:
-                    late_sellers.append(item["seller_id"])
+                    late_sellers.append(seller_id)
     return {
         "delivered_at": delivered_at or None,
         "estimated_delivery_at": estimated_at or None,
@@ -182,13 +194,24 @@ def build_output(case: dict[str, Any], data: dict[str, Any]) -> dict[str, Any]:
     amount_info = compute_amounts(order_id, items, payments)
     delivery = build_delivery_analysis(order, items)
     late_handoff = len(delivery["late_handoff_seller_ids"]) > 0
-    primary_issue, action_main, responsible_parties, actions, root_causes = select_primary_issue(
+    primary_issue, action_main, responsible_parties, root_cause = select_primary_issue(
         order, amount_info, delivery["delivery_variance_hours"], late_handoff, delivery["late_handoff_seller_ids"], payments,
     )
-    customer_orders = [row for rows in data["orders"].values() for row in rows if row["customer_id"] == order["customer_id"] and row["order_id"] != order_id]
+    customer_orders = [row for row in data["orders_by_customer_unique"].get(customer.get("customer_unique_id"), []) if row["order_id"] != order_id]
     secondary_issues = build_secondary_issues(items, payments, customer_orders, data["products"])
-    category_names = [data["products"][item["product_id"]]["product_category_name"] for item in items if item["product_id"] in data["products"]][:5]
-    product_ids = [item["product_id"] for item in items][:5]
+    category_names = list(dict.fromkeys(data["products"][item["product_id"]]["product_category_name"] for item in items if item["product_id"] in data["products"]))[:5]
+    product_ids = list(dict.fromkeys(item["product_id"] for item in items))[:5]
+    actions = [action_main]
+    if primary_issue in {"canceled_order_paid", "unavailable_order_paid"}:
+        actions.append("verify_refund_completion")
+    elif primary_issue == "late_delivery_seller":
+        actions.extend(["review_seller_handoff", "verify_refund_completion"])
+    elif primary_issue == "late_delivery_logistics":
+        actions.extend(["review_carrier_delay", "verify_refund_completion"])
+    if "multi_seller_order" in secondary_issues:
+        actions.append("coordinate_multi_seller_case")
+    if "split_payment" in secondary_issues and primary_issue != "valid_split_payment":
+        actions.append("verify_payment_allocation")
     output = {
         "case_id": case["case_id"],
         "case_assessment": {
@@ -223,15 +246,15 @@ def build_output(case: dict[str, Any], data: dict[str, Any]) -> dict[str, Any]:
             "payment_types": [p["payment_type"] for p in payments][:5],
         },
         "root_cause_analysis": {
-            "ranked_causes": [{"cause_code": root_causes[0], "rank": 1}] if root_causes else [],
-            "responsible_parties": [{"party_type": "seller" if sid != "platform" and sid != "logistics_provider" else sid, "party_id": sid} for sid in responsible_parties][:3],
+            "ranked_causes": [{"cause_code": root_cause, "rank": 1}],
+            "responsible_parties": responsible_parties[:3],
         },
-        "evidence_ids": build_evidence(order_id, items, payments, delivery["late_handoff_seller_ids"], root_causes[0] if root_causes else "ORDER_UNAVAILABLE_AFTER_PAYMENT"),
+        "evidence_ids": build_evidence(order_id, items, payments, [party["party_id"] for party in responsible_parties if party["party_type"] == "seller"], root_cause),
         "financial_resolution": {
             "currency": "BRL",
             "recommended_refund_brl": amount_info["freight_total_brl"] if primary_issue in {"late_delivery_seller", "late_delivery_logistics"} else (amount_info["payment_total_brl"] if primary_issue in {"canceled_order_paid", "unavailable_order_paid"} else Decimal("0.00")),
         },
-        "resolution_actions": actions + ["review_seller_handoff" if primary_issue == "late_delivery_seller" else "review_carrier_delay" if primary_issue == "late_delivery_logistics" else "verify_payment_allocation" if primary_issue not in {"valid_split_payment", "unsupported_late_claim"} else ""],
+        "resolution_actions": actions,
     }
     output["resolution_actions"] = [a for a in output["resolution_actions"] if a]
     return output

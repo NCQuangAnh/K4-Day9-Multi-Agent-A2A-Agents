@@ -3,7 +3,8 @@
   "case_assessment": {
     "primary_issue": "late_delivery_logistics",
     "secondary_issues": [
-      "multi_item_order"
+      "multi_item_order",
+      "repeat_customer"
     ],
     "case_status": "action_required",
     "confidence": 0.92
@@ -25,15 +26,15 @@
   },
   "customer_context": {
     "customer_unique_id": "317f563ca3576550955f39a346b15be5",
-    "related_order_ids": []
+    "related_order_ids": [
+      "074054ad3d2e5ee3fc6f098d06f321f9"
+    ]
   },
   "product_context": {
     "product_ids": [
-      "da6f9d8ce4950ad572b7b4fe7d7e6c90",
       "da6f9d8ce4950ad572b7b4fe7d7e6c90"
     ],
     "category_names": [
-      "beleza_saude",
       "beleza_saude"
     ]
   },
@@ -43,12 +44,6 @@
     "carrier_handoff_at": "2018-02-22 20:37:22",
     "delivery_variance_hours": 106.64,
     "seller_handoff_analysis": [
-      {
-        "seller_id": "8b28d096634035667e8263d57ba3368c",
-        "shipping_limit_at": "2018-02-26 21:15:43",
-        "handoff_variance_hours": -96.64,
-        "late_handoff": false
-      },
       {
         "seller_id": "8b28d096634035667e8263d57ba3368c",
         "shipping_limit_at": "2018-02-26 21:15:43",
@@ -80,7 +75,7 @@
     "responsible_parties": [
       {
         "party_type": "logistics_provider",
-        "party_id": "logistics_provider"
+        "party_id": "LOGISTICS_PROVIDER"
       }
     ]
   },
@@ -97,6 +92,7 @@
   },
   "resolution_actions": [
     "refund_freight",
-    "review_carrier_delay"
+    "review_carrier_delay",
+    "verify_refund_completion"
   ]
 }
