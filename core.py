@@ -128,6 +128,17 @@ class Variant:
     # 'coordinate_multi_seller_case' du khong ai chiu trach nhiem.
     extra_actions_only_when_action_required: bool = False
 
+    # delivery_variance_hours / handoff_variance_hours khi khong tinh duoc:
+    # null (False) hay 0.0 (True).
+    #
+    # README §6 chi cho phep null voi TIMESTAMP: "Cac timestamp giu nguyen dinh
+    # dang trong CSV (YYYY-MM-DD HH:MM:SS) hoac null neu du lieu khong co".
+    # §4 liet ke dich danh ba field SO duoc phep null (expected_total_brl,
+    # difference_brl, reconciled) — KHONG co hai field variance nay.
+    # Vi du §6 cung cho thay chung la so (87.39 / 1.04).
+    # => Dat null o day la SUY DIEN, khong co can cu van ban.
+    numeric_variance_when_missing: bool = False
+
     # --- PHEP DO: co tinh XOA mot field de do phan ung cua bai cham ---------
     # Nguyen ly: neu field dang DUNG, xoa no lam diem TUT. Neu field dang SAI,
     # xoa no KHONG doi diem (vi no von da 0 diem o cho do).
@@ -162,6 +173,11 @@ VARIANTS: dict[str, Variant] = {
                      empty_handoff_when_no_carrier=True,
                      evidence_all_sellers=True,
                      extra_actions_only_when_action_required=True),
+
+    # Sua duy nhat mot thu: hai field variance khong con null.
+    # Anh huong 14 case (delivery_variance) + 7 case (handoff_variance).
+    "numeric_variance": Variant("numeric_variance",
+                                numeric_variance_when_missing=True),
 
     # --- PHEP DO ----------------------------------------------------------
     # Moi phep do XOA dung mot field so voi base. Doc ket qua:
@@ -871,6 +887,18 @@ class Assembler:
                    and dele.carrier_handoff_at is None)
             else dele.seller_handoff_analysis
         )
+        delivery_variance_out = dele.delivery_variance_hours
+        if var.numeric_variance_when_missing:
+            # Hai field variance la SO, khong phai timestamp -> theo dung van
+            # ban de bai thi chung khong duoc phep null.
+            if delivery_variance_out is None:
+                delivery_variance_out = 0.0
+            handoff_out = [
+                {**s, "handoff_variance_hours": (
+                    0.0 if s["handoff_variance_hours"] is None
+                    else s["handoff_variance_hours"])}
+                for s in handoff_out
+            ]
         no_items = op.item_count == 0
         item_total_out = (
             None if (var.null_money_when_no_items and no_items)
@@ -924,7 +952,7 @@ class Assembler:
                 "delivered_at": dele.delivered_at,
                 "estimated_delivery_at": dele.estimated_delivery_at,
                 "carrier_handoff_at": dele.carrier_handoff_at,
-                "delivery_variance_hours": dele.delivery_variance_hours,
+                "delivery_variance_hours": delivery_variance_out,
                 "seller_handoff_analysis": handoff_out,
                 "late_handoff_seller_ids": dele.late_handoff_seller_ids,
             },
