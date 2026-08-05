@@ -380,8 +380,22 @@ def cmd_validate(store: DataStore, expect: int = 50) -> int:
     total_fail = 0
 
     for f in files:
+        # Bat truong hop file bi mot cong cu BEN NGOAI ghi de (tung xay ra:
+        # mot trinh format JSON thay het null -> "N/A"/0.0/false va them BOM).
+        raw = f.read_bytes()
+        encoding_issue = None
+        if raw.startswith(b"\xef\xbb\xbf"):
+            encoding_issue = "file co BOM UTF-8 (pipeline khong bao gio ghi BOM)"
+        elif b'"N/A"' in raw:
+            encoding_issue = 'file chua chuoi "N/A" (pipeline khong bao gio sinh ra)'
+        if encoding_issue:
+            print(f"  [FAIL] {f.name}: {encoding_issue}")
+            print("         -> file da bi sua ngoai pipeline. Khoi phuc bang:")
+            print("            git checkout -- output/    hoac    python run.py --all")
+            total_fail += 1
+            continue
         try:
-            out = json.loads(f.read_text(encoding="utf-8"))
+            out = json.loads(raw.decode("utf-8"))
         except Exception as exc:  # noqa: BLE001
             print(f"  [FAIL] {f.name}: khong parse duoc JSON ({exc})")
             total_fail += 1
