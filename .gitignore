@@ -1,0 +1,31 @@
+# Secrets — KHONG BAO GIO commit (README §9.4)
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Artifact tam thoi
+selftest/
+submission*.zip
+
+# LUU Y: KHONG gitignore output/ va logging/
+# README §8 yeu cau repo phai co trace.jsonl va metadata.json;
+# output/*.json la ket qua cham diem.
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

@@ -1,0 +1,7 @@
+# Loi tat dinh — bat buoc
+pandas>=2.0.0
+
+# Tang agent LLM — tuy chon.
+# Thieu goi nay hoac thieu API key, pipeline tu dong chay o che do tat dinh
+# (tuong duong --no-llm) thay vi bao loi.
+openai>=1.30.0
