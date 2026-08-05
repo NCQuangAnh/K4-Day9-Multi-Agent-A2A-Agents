@@ -99,15 +99,15 @@ Nội dung mục này trả lời 5 câu hỏi end-to-end của bài lab RAG.
 
 **Câu trả lời:**
 
-1. Pipeline lấy bản ghi học thuật từ Crossref qua API, chuẩn hóa các trường cần tìm kiếm như tiêu đề, abstract, tác giả, năm xuất bản, DOI và URL. Mỗi bản ghi được gán document ID ổn định, làm sạch/chia nhỏ nội dung khi cần, rồi đưa qua embedding model để biến thành vector. Vector được lưu vào vector index cùng metadata và document ID. Khi có câu hỏi, hệ thống embedding câu hỏi, tìm các vector gần nhất và dùng các document được truy hồi làm ngữ cảnh để tạo câu trả lời.
+1. Từ góc nhìn tầng dữ liệu, Crossref cung cấp metadata thô qua API. Pipeline kiểm tra DOI, chuẩn hóa kiểu dữ liệu và giữ một ID nguồn cố định cho từng work trước khi làm sạch abstract hoặc tách thành chunk. Embedding của từng chunk được tạo rồi ghi vào vector index kèm ID, DOI, năm và vị trí chunk; metadata này giúp truy hồi xong vẫn tra ngược được về bản ghi gốc.
 
-2. Evaluation set là tập câu hỏi chuẩn để chạy đánh giá lặp lại được. Với mỗi câu hỏi, ground-truth document IDs chỉ ra các tài liệu đáng lẽ phải được truy hồi. Retrieval quality được đo bằng việc các ID đúng có xuất hiện trong top-*k* hay không, ví dụ Recall@k hoặc Hit@k. Answer quality được đánh giá dựa trên việc câu trả lời có đúng, bám vào các tài liệu ground truth và có dẫn chứng phù hợp hay không; retrieval tốt là điều kiện quan trọng nhưng không tự động bảo đảm câu trả lời tốt.
+2. Mỗi query trong evaluation set đi cùng danh sách ground-truth document IDs. Sau khi index trả top-*k*, hệ thống so tập ID trả về với tập ID chuẩn để tính Hit@k, Recall@k hoặc MRR. Phần trả lời chỉ được coi là tốt khi thông tin nó nêu được hỗ trợ bởi các tài liệu đúng; vì vậy cần đo riêng retrieval và mức độ grounded/correct của answer.
 
-3. Quality checks kiểm tra chất lượng và tính hợp lệ của dữ liệu/index tại một thời điểm: schema và trường bắt buộc, DOI/document ID, bản ghi trùng, nội dung rỗng, embedding thiếu hoặc metadata không khớp. Freshness monitoring theo dõi dữ liệu có còn mới và pipeline có cập nhật đúng lịch hay không, chẳng hạn thời điểm đồng bộ Crossref gần nhất, độ trễ ingest và số bản ghi mới. Nói ngắn gọn, quality trả lời “dữ liệu có đúng và dùng được không?”, còn freshness trả lời “dữ liệu có đủ mới không?”.
+3. Quality checks là kiểm tra tính đúng của bản ghi và index: thiếu DOI, trùng ID, chunk rỗng, metadata sai kiểu hoặc số vector không khớp số chunk đều là lỗi chất lượng. Freshness monitoring không kết luận các dữ liệu đó đúng hay sai; nó theo dõi lần đồng bộ cuối, độ tuổi của snapshot và lượng dữ liệu mới để biết index có bị cũ không.
 
-4. Dùng cùng một test set giúp phép so sánh công bằng: khác biệt metric chỉ đến từ trạng thái hệ thống (baseline, dữ liệu/index bị corrupt, hay bản đã repair), không phải do câu hỏi dễ hoặc khó khác nhau. Nhờ vậy có thể xác định mức suy giảm do corruption và kiểm chứng repair có thực sự khôi phục chất lượng thay vì chỉ tình cờ đạt điểm tốt trên một tập khác.
+4. Baseline, corrupted và repaired phải chạy trên đúng một evaluation set để loại trừ biến số đầu vào. Nếu thay query hoặc ground truth giữa các lần chạy thì sự khác nhau của Recall@k có thể do tập mới khó hơn, không thể quy cho lỗi index hay hiệu quả repair.
 
-5. Repair thành công khi artifact sau sửa cho thấy pipeline đã được khôi phục — ví dụ index được rebuild/cập nhật, báo cáo kiểm tra chất lượng không còn lỗi liên quan và log chạy evaluation hoàn tất. Về metric, retrieval trên cùng evaluation set phải phục hồi về mức baseline hoặc đạt ngưỡng chấp nhận đã đặt ra (như Recall@k/Hit@k); answer-quality score cũng phải đạt ngưỡng tương ứng và không còn lỗi do document ID, metadata hay context bị hỏng. Cần xem đồng thời artifact và metric, vì chỉ có index mới mà metric không phục hồi thì repair chưa được chứng minh là thành công.
+5. Với tầng dữ liệu, repair cần để lại artifact kiểm tra được như manifest/index version, số document và chunk đã nạp, cùng báo cáo không còn bản ghi lỗi. Sau đó các metric retrieval trên cùng test set phải trở lại ngưỡng baseline; chỉ khi cả tính toàn vẹn dữ liệu lẫn Recall@k/MRR được phục hồi mới xác nhận repair thành công.
 
 ## 8. Cam kết của thành viên
 

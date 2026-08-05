@@ -99,15 +99,15 @@ Nội dung mục này trả lời 5 câu hỏi end-to-end của bài lab RAG.
 
 **Câu trả lời:**
 
-1. Pipeline lấy bản ghi học thuật từ Crossref qua API, chuẩn hóa các trường cần tìm kiếm như tiêu đề, abstract, tác giả, năm xuất bản, DOI và URL. Mỗi bản ghi được gán document ID ổn định, làm sạch/chia nhỏ nội dung khi cần, rồi đưa qua embedding model để biến thành vector. Vector được lưu vào vector index cùng metadata và document ID. Khi có câu hỏi, hệ thống embedding câu hỏi, tìm các vector gần nhất và dùng các document được truy hồi làm ngữ cảnh để tạo câu trả lời.
+1. Crossref là nguồn đầu vào; từng bản ghi được chuẩn hóa, gắn document ID và tách thành các chunk có provenance như DOI và vị trí trong tài liệu. Sau bước embedding, vector index lưu vector cùng metadata đó. Khi truy vấn, retriever trả top-*k* chunk kèm ID nguồn, nên câu trả lời có thể lần theo đúng document thay vì dùng context không rõ xuất xứ.
 
-2. Evaluation set là tập câu hỏi chuẩn để chạy đánh giá lặp lại được. Với mỗi câu hỏi, ground-truth document IDs chỉ ra các tài liệu đáng lẽ phải được truy hồi. Retrieval quality được đo bằng việc các ID đúng có xuất hiện trong top-*k* hay không, ví dụ Recall@k hoặc Hit@k. Answer quality được đánh giá dựa trên việc câu trả lời có đúng, bám vào các tài liệu ground truth và có dẫn chứng phù hợp hay không; retrieval tốt là điều kiện quan trọng nhưng không tự động bảo đảm câu trả lời tốt.
+2. Evaluation set cung cấp luồng query lặp lại được. Ground-truth document IDs là contract cho retriever: hệ thống đối chiếu chúng với ID trong top-*k* để tính Hit@k/Recall@k hoặc MRR. Sau handoff retrieval → answer, evaluator kiểm tra câu trả lời có bám các nguồn đúng và giải đáp đúng yêu cầu hay không, nên retrieval score và answer score được theo dõi riêng.
 
-3. Quality checks kiểm tra chất lượng và tính hợp lệ của dữ liệu/index tại một thời điểm: schema và trường bắt buộc, DOI/document ID, bản ghi trùng, nội dung rỗng, embedding thiếu hoặc metadata không khớp. Freshness monitoring theo dõi dữ liệu có còn mới và pipeline có cập nhật đúng lịch hay không, chẳng hạn thời điểm đồng bộ Crossref gần nhất, độ trễ ingest và số bản ghi mới. Nói ngắn gọn, quality trả lời “dữ liệu có đúng và dùng được không?”, còn freshness trả lời “dữ liệu có đủ mới không?”.
+3. Quality checks rà soát artifact và liên kết giữa các bước: record hợp lệ, chunk không rỗng, embedding tồn tại, ID từ index tra được về Crossref. Freshness monitoring ghi nhận nhịp cập nhật, timestamp và độ trễ để phát hiện index đã cũ. Check chất lượng có thể pass dù dữ liệu cũ, vì vậy vẫn cần monitoring freshness độc lập.
 
-4. Dùng cùng một test set giúp phép so sánh công bằng: khác biệt metric chỉ đến từ trạng thái hệ thống (baseline, dữ liệu/index bị corrupt, hay bản đã repair), không phải do câu hỏi dễ hoặc khó khác nhau. Nhờ vậy có thể xác định mức suy giảm do corruption và kiểm chứng repair có thực sự khôi phục chất lượng thay vì chỉ tình cờ đạt điểm tốt trên một tập khác.
+4. Dùng một test set cố định bảo toàn khả năng trace chênh lệch: cùng query và ground truth sẽ cho thấy rõ corruption làm hỏng bước nào, và repair có khôi phục được không. Đổi test set giữa các lượt sẽ không còn cơ sở để so sánh trực tiếp metric trước/sau.
 
-5. Repair thành công khi artifact sau sửa cho thấy pipeline đã được khôi phục — ví dụ index được rebuild/cập nhật, báo cáo kiểm tra chất lượng không còn lỗi liên quan và log chạy evaluation hoàn tất. Về metric, retrieval trên cùng evaluation set phải phục hồi về mức baseline hoặc đạt ngưỡng chấp nhận đã đặt ra (như Recall@k/Hit@k); answer-quality score cũng phải đạt ngưỡng tương ứng và không còn lỗi do document ID, metadata hay context bị hỏng. Cần xem đồng thời artifact và metric, vì chỉ có index mới mà metric không phục hồi thì repair chưa được chứng minh là thành công.
+5. Repair thành công phải có artifact truy vết được, như log rebuild index, manifest phiên bản và báo cáo kiểm tra không còn lỗi; đồng thời evaluation log trên test set cố định phải cho thấy Hit@k/Recall@k và answer quality đạt lại ngưỡng mục tiêu. Chỉ có artifact hoặc chỉ có một metric tốt đều chưa đủ để kết luận repair đã hoàn tất.
 
 ## 8. Cam kết của thành viên
 
