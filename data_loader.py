@@ -83,11 +83,22 @@ class OlistData:
         try:
             customer_rows = self._customers_by_unique.get_group(customer_unique_id)
             customer_ids = customer_rows["customer_id"].tolist()
-            # Find all orders for these customer_ids
             related_orders = self.orders[
                 self.orders["customer_id"].isin(customer_ids)
             ]["order_id"].tolist()
             return related_orders
+        except KeyError:
+            return []
+
+    def get_customer_history_detailed(self, customer_unique_id: str) -> list[dict]:
+        """Get all order records for a customer_unique_id."""
+        try:
+            customer_rows = self._customers_by_unique.get_group(customer_unique_id)
+            customer_ids = customer_rows["customer_id"].tolist()
+            matched_orders = self.orders[
+                self.orders["customer_id"].isin(customer_ids)
+            ]
+            return matched_orders.to_dict("records")
         except KeyError:
             return []
 

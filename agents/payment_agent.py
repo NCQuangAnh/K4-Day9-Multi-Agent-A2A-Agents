@@ -1,5 +1,5 @@
 """
-payment_agent.py - Payment reconciliation against items + freight.
+payment_agent.py - Payment reconciliation and ID extraction.
 """
 
 from agent_base import BaseAgent
@@ -14,32 +14,55 @@ class PaymentAgent(BaseAgent):
 
     def process(self, case_id: str, order_id: str, db: OlistData, items_raw: list) -> dict:
         """
-        Calculate payment reconciliation.
-        Returns payment_reconciliation dict and payment_ids.
+        Reconcile payments against items + freight.
+        Returns payment_reconciliation and payment_ids dict.
         """
         self.log_action(case_id, "reconcile_payments", {"order_id": order_id})
 
         payments = db.get_order_payments(order_id)
 
-        # Payment IDs: format is "order_id:payment_sequential"
-        payment_ids = []
-        payment_total = 0.0
-        payment_types = []
+        if not payments:
+            return {
+                "payment_reconciliation": {
+                    "currency": "BRL",
+                    "item_total_brl": 0.0 if items_raw else None,
+                    "freight_total_brl": 0.0 if items_raw else None,
+                    "expected_total_brl": 0.0 if items_raw else None,
+                    "payment_total_brl": 0.0,
+                    "difference_brl": 0.0 if items_raw else None,
+                    "reconciled": True if items_raw else None,
+                    "payment_types": [],
+                },
+                "payment_ids": [],
+            }
 
-        for p in payments:
+        # Sort payments by payment_sequential ascending (1, 2, 3...)
+        sorted_payments = sorted(
+            payments,
+            key=lambda x: int(x.get("payment_sequential", 0)) if str(x.get("payment_sequential", "")).isdigit() else 0
+        )
+
+        payment_ids = []
+        payment_types = []
+        payment_total = 0.0
+
+        for p in sorted_payments:
             seq = p.get("payment_sequential")
-            payment_ids.append(f"{order_id}:{seq}")
-            val = p.get("payment_value", 0)
-            payment_total += float(val) if val and str(val) != "nan" else 0.0
+            if seq is not None:
+                payment_ids.append(f"{order_id}:{seq}")
+
             ptype = p.get("payment_type")
             if ptype and str(ptype) != "nan" and ptype not in payment_types:
-                payment_types.append(ptype)
+                payment_types.append(str(ptype))
+
+            val = p.get("payment_value", 0)
+            if val and str(val) != "nan":
+                payment_total += float(val)
 
         payment_total = round(payment_total, 2)
 
-        # Calculate expected total from items
         if not items_raw:
-            # No item rows -> null values per README
+            # No item rows -> null values per README lines 112-113
             result = {
                 "payment_reconciliation": {
                     "currency": "BRL",
@@ -83,10 +106,9 @@ class PaymentAgent(BaseAgent):
                 "payment_ids": payment_ids[:5],
             }
 
-        self.log_action(case_id, "payment_reconciled", {
+        self.log_action(case_id, "payments_reconciled", {
             "payment_total": payment_total,
-            "payment_count": len(payments),
-            "reconciled": result["payment_reconciliation"].get("reconciled"),
+            "reconciled": result["payment_reconciliation"]["reconciled"],
         })
 
         return result
