@@ -54,7 +54,7 @@
     }
   ],
   "model_constraint": "moi agent dung model <= 10B tham so (README §9.1)",
-  "llm_enabled": false,
+  "llm_enabled": true,
   "framework": "custom multi-agent orchestration (OpenAI-compatible client)",
   "runtime": {
     "python": "3.11.4",
@@ -62,12 +62,12 @@
     "pandas": "2.0.3"
   },
   "run": {
-    "started_at": "2026-08-05T14:19:34.447945+00:00",
-    "finished_at": "2026-08-05T14:19:34.546446+00:00",
-    "duration_seconds": 0.1,
+    "started_at": "2026-08-05T14:23:19.085164+00:00",
+    "finished_at": "2026-08-05T14:26:46.588346+00:00",
+    "duration_seconds": 207.5,
     "cases": 50,
-    "llm_calls": 0,
-    "llm_failures": 0,
+    "llm_calls": 400,
+    "llm_failures": 48,
     "policy_discrepancies": 0,
     "gate_failures": 0,
     "retries": 0
