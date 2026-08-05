@@ -1,0 +1,18 @@
+{
+  "run_id": "run_20260805_170106",
+  "case_count": 50,
+  "dry_run": true,
+  "models": {
+    "data_investigator": "qwen/qwen3.5-9b",
+    "policy_resolver": "qwen/qwen3-8b"
+  },
+  "validated_cases": 50,
+  "primary_issue_counts": {
+    "canceled_order_paid": 8,
+    "late_delivery_logistics": 10,
+    "late_delivery_seller": 10,
+    "unavailable_order_paid": 6,
+    "unsupported_late_claim": 8,
+    "valid_split_payment": 8
+  }
+}
