@@ -1,6 +1,6 @@
 {
-  "model": "llama-3.1-8b-instant",
-  "parameter_size": "8B",
+  "model": "allam-2-7b",
+  "parameter_size": "7B",
   "framework": "Python Multi-Agent System",
   "runtime": "Groq API",
   "agents": [
