@@ -151,7 +151,15 @@ class Variant:
 # Moi variant doi DUNG MOT gia dinh, va moi gia dinh cham DUNG MOT hang muc
 # cham diem -> co the gop tat ca vao 'combo' de kiem chung trong MOT lan nop.
 VARIANTS: dict[str, Variant] = {
-    "base": Variant("base"),
+    # Cach doc da duoc DOI CHIEU voi ban 85 diem (output85.zip):
+    #   - confidence = 0.92 co dinh
+    #   - seller_handoff_analysis = [] khi carrier_handoff_at = null
+    #   - payment giu thu tu dong CSV, payment_types khong khu trung lap
+    #     (hai dieu nay da sua thang trong DataStore/PaymentTools)
+    "base": Variant("base", fixed_confidence=0.92,
+                    empty_handoff_when_no_carrier=True),
+    # Giu lai cach doc cu (79.6502 diem) de doi chieu khi can.
+    "v79": Variant("v79"),
     "conf_092": Variant("conf_092", fixed_confidence=0.92),                  # hm 1
     "seller_resp": Variant("seller_resp", seller_ids_responsible_only=True),  # hm 2
     "cat_en": Variant("cat_en", english_categories=True),                    # hm 3
@@ -416,9 +424,11 @@ class DataStore:
                     payment_value=_to_decimal(val),
                 )
             )
-        self.payments_by_order = {
-            k: sorted(v, key=lambda r: r.payment_sequential) for k, v in grouped.items()
-        }
+        # KHONG sort. De bai: "cac array phai giu thu tu on dinh theo DU LIEU
+        # NGUON" — tuc dung thu tu DONG TRONG FILE CSV, khong phai sort theo
+        # payment_sequential. Doi chieu voi ban 85 diem xac nhan dieu nay:
+        # EC_015 co payment_ids = [:1, :4, :3, :2] chu khong phai [:1,:2,:3,:4].
+        self.payments_by_order = dict(grouped)
 
     def _load_customers(self) -> None:
         df = self._read(
@@ -624,7 +634,10 @@ class PaymentTools:
         facts = PaymentFacts(
             payment_ids=[f"{order_id}:{p.payment_sequential}" for p in pays],
             payment_rows=len(pays),
-            payment_types=unique_ordered(p.payment_type for p in pays),
+            # KHONG khu trung lap: moi payment row mot phan tu, dung thu tu CSV.
+            # Ban 85 diem: EC_015 co ["credit_card","voucher","voucher","voucher"]
+            # cho 4 payment row, khong phai ["credit_card","voucher"].
+            payment_types=[p.payment_type for p in pays],
             item_total=item_total,
             freight_total=freight_total,
             payment_total=payment_total,
