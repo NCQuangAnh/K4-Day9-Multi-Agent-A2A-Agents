@@ -25,6 +25,5 @@ or evidence absent from the CSV files. The verifier rejects unsupported IDs,
 bad null handling, unstable-limit violations, or an invalid schema before the
 packager writes `output.zip`.
 
-The optional local reasoning runtime is `Qwen2.5-7B-Instruct` (7B parameters,
-temperature 0). It may summarize agent handoffs, but policy calculations and
-all submitted values are produced from source CSV data and deterministic rules.
+Policy calculations and all submitted values are produced from source CSV data
+and deterministic rules.

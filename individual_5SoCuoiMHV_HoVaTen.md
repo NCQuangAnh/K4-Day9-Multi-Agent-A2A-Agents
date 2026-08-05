@@ -34,10 +34,9 @@ trước khi tạo file nộp.
 
 Tính toán tiền, chênh lệch giao hàng và phân loại policy được giữ theo quy tắc
 xác định thay vì để model sinh số liệu. Cách này giúp mọi giá trị trong output
-đối chiếu được với CSV, đặc biệt cho refund và evidence ID. `Qwen2.5-7B-Instruct`
-(7B) được khai báo cho tầng suy luận/handoff cục bộ, với temperature bằng 0 để
-giảm biến thiên; model chưa được gọi trong lượt tạo output hiện tại vì môi
-trường chưa có local runtime.
+đối chiếu được với CSV, đặc biệt cho refund và evidence ID. Lượt tạo output
+hiện tại không gọi model sinh ngôn ngữ; toàn bộ kết quả được tái lập trực tiếp
+từ dữ liệu nguồn và chính sách nghiệp vụ.
 
 ## Kiểm chứng
 
