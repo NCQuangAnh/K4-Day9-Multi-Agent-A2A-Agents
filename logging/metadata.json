@@ -1,0 +1,75 @@
+{
+  "run_type": "official",
+  "input_dir": "E:\\University\\VinUni\\Day8\\E403\\K4-Day9-Multi-Agent-A2A-Agents\\input",
+  "profile": "openrouter_open_weights",
+  "models": [
+    {
+      "agent": "coordinator",
+      "provider": "openrouter",
+      "model": "meta-llama/llama-3.1-8b-instruct",
+      "parameter_size": "8.0B (dense)",
+      "source_of_parameter_count": "Llama 3.1 model card (chinh thuc)"
+    },
+    {
+      "agent": "customer",
+      "provider": "openrouter",
+      "model": "google/gemma-3-4b-it",
+      "parameter_size": "4.0B (dense)",
+      "source_of_parameter_count": "Gemma 3 model card (chinh thuc)"
+    },
+    {
+      "agent": "order_product",
+      "provider": "openrouter",
+      "model": "qwen/qwen-2.5-7b-instruct",
+      "parameter_size": "7.0B (dense)",
+      "source_of_parameter_count": "Qwen2.5 model card (chinh thuc)"
+    },
+    {
+      "agent": "payment",
+      "provider": "openrouter",
+      "model": "meta-llama/llama-3.1-8b-instruct",
+      "parameter_size": "8.0B (dense)",
+      "source_of_parameter_count": "Llama 3.1 model card (chinh thuc)"
+    },
+    {
+      "agent": "delivery",
+      "provider": "openrouter",
+      "model": "qwen/qwen-2.5-7b-instruct",
+      "parameter_size": "7.0B (dense)",
+      "source_of_parameter_count": "Qwen2.5 model card (chinh thuc)"
+    },
+    {
+      "agent": "policy",
+      "provider": "openrouter",
+      "model": "ibm-granite/granite-4.1-8b",
+      "parameter_size": "8.0B (dense)",
+      "source_of_parameter_count": "Granite 4.1 model card (chinh thuc)"
+    },
+    {
+      "agent": "verifier",
+      "provider": "openrouter",
+      "model": "mistralai/ministral-8b-2512",
+      "parameter_size": "8.0B (dense)",
+      "source_of_parameter_count": "Ministral 8B model card (chinh thuc)"
+    }
+  ],
+  "model_constraint": "moi agent dung model <= 10B tham so (README §9.1)",
+  "llm_enabled": true,
+  "framework": "custom multi-agent orchestration (OpenAI-compatible client)",
+  "runtime": {
+    "python": "3.11.4",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "pandas": "2.0.3"
+  },
+  "run": {
+    "started_at": "2026-08-05T14:51:23.803768+00:00",
+    "finished_at": "2026-08-05T14:54:05.369982+00:00",
+    "duration_seconds": 161.57,
+    "cases": 50,
+    "llm_calls": 352,
+    "llm_failures": 0,
+    "policy_discrepancies": 0,
+    "gate_failures": 0,
+    "retries": 0
+  }
+}
