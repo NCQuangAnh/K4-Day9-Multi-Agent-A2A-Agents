@@ -128,6 +128,14 @@ class Variant:
     # 'coordinate_multi_seller_case' du khong ai chiu trach nhiem.
     extra_actions_only_when_action_required: bool = False
 
+    # --- PHEP DO: co tinh XOA mot field de do phan ung cua bai cham ---------
+    # Nguyen ly: neu field dang DUNG, xoa no lam diem TUT. Neu field dang SAI,
+    # xoa no KHONG doi diem (vi no von da 0 diem o cho do).
+    # -> Mot lan nop = biet field do dang dung hay sai, khong can doan.
+    # Chi lam rong mang / dat gia tri trung tinh, KHONG doi kieu du lieu nen
+    # khong the vi pham schema.
+    blank_fields: tuple[str, ...] = ()
+
 
 # Moi variant doi DUNG MOT gia dinh, va moi gia dinh cham DUNG MOT hang muc
 # cham diem -> co the gop tat ca vao 'combo' de kiem chung trong MOT lan nop.
@@ -154,6 +162,33 @@ VARIANTS: dict[str, Variant] = {
                      empty_handoff_when_no_carrier=True,
                      evidence_all_sellers=True,
                      extra_actions_only_when_action_required=True),
+
+    # --- PHEP DO ----------------------------------------------------------
+    # Moi phep do XOA dung mot field so voi base. Doc ket qua:
+    #   diem TUT   -> field do dang DUNG (dang duoc tinh diem)
+    #   diem GIU   -> field do dang SAI  (von da khong duoc diem)
+    # Moi phep do deu hop schema (chi lam rong mang / dat gia tri trung tinh).
+    "probe_secondary":  Variant("probe_secondary",
+                                blank_fields=("case_assessment.secondary_issues",)),
+    "probe_confidence": Variant("probe_confidence",
+                                blank_fields=("case_assessment.confidence",)),
+    "probe_sellers":    Variant("probe_sellers",
+                                blank_fields=("affected_entities.seller_ids",)),
+    "probe_items":      Variant("probe_items",
+                                blank_fields=("affected_entities.item_ids",)),
+    "probe_related":    Variant("probe_related",
+                                blank_fields=("customer_context.related_order_ids",)),
+    "probe_category":   Variant("probe_category",
+                                blank_fields=("product_context.category_names",)),
+    "probe_products":   Variant("probe_products",
+                                blank_fields=("product_context.product_ids",)),
+    "probe_handoff":    Variant("probe_handoff",
+                                blank_fields=(
+                                    "delivery_analysis.seller_handoff_analysis",)),
+    "probe_paytypes":   Variant("probe_paytypes",
+                                blank_fields=("payment_reconciliation.payment_types",)),
+    "probe_evidence":   Variant("probe_evidence", blank_fields=("evidence_ids",)),
+    "probe_actions":    Variant("probe_actions", blank_fields=("resolution_actions",)),
 }
 
 
@@ -918,7 +953,37 @@ class Assembler:
             },
             "resolution_actions": decision.resolution_actions,
         }
+        if var.blank_fields:
+            self._blank(output, var.blank_fields)
         return output, truncated
+
+    @staticmethod
+    def _blank(out: dict[str, Any], paths: tuple[str, ...]) -> None:
+        """Xoa noi dung mot so field de DO phan ung cua bai cham.
+
+        Chi dat gia tri trung tinh CUNG KIEU (mang -> rong, so -> 0.5), nen
+        output van hop schema. Rieng evidence_ids va resolution_actions phai
+        con it nhat mot phan tu -> chi giu phan toi thieu.
+        """
+        for path in paths:
+            parts = path.split(".")
+            node: Any = out
+            for p in parts[:-1]:
+                node = node[p]
+            key = parts[-1]
+            cur = node[key]
+            if path == "evidence_ids":
+                node[key] = [e for e in cur if e.startswith(("order:", "policy:"))]
+            elif path == "resolution_actions":
+                node[key] = cur[:1]
+            elif isinstance(cur, list):
+                node[key] = []
+            elif isinstance(cur, bool) or cur is None:
+                pass                      # khong dung toi de khoi doi kieu
+            elif isinstance(cur, (int, float)):
+                node[key] = 0.5 if key == "confidence" else cur
+            elif isinstance(cur, str):
+                pass
 
     @staticmethod
     def _evidence_ids(b: EvidenceBundle, d: PolicyDecision,
