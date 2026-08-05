@@ -11,8 +11,5 @@
     "delivery_agent",
     "policy_agent",
     "verifier_agent"
-  ],
-  "total_cases": 50,
-  "total_time_seconds": 147.8,
-  "avg_time_per_case_seconds": 2.96
+  ]
 }
