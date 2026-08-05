@@ -6,8 +6,8 @@
 
 | Thông tin       | Nội dung     |
 | --------------- | ------------ |
-| Họ và tên       | Nguyễn Cao Quang Anh |
-| MSSV            | 2A202601352 |
+| Họ và tên       | Nguyễn Thị Nam Phương |
+| MSSV            | 2A202601720 |
 | Khóa/Lớp        | K4 |
 | Vai trò chính   | [Vai trò]    |
 | Ngày hoàn thành | 2026-08-05 |
@@ -117,5 +117,5 @@ Giải thích ngắn gọn bằng lời của bạn:
 - [ ] Báo cáo không chứa `.env`, API key, token hoặc secret.
 - [ ] Báo cáo này không phải bản sao nguyên văn của báo cáo nhóm hoặc báo cáo thành viên khác.
 
-**Họ và tên:** Nguyễn Cao Quang Anh
+**Họ và tên:** Nguyễn Thị Nam Phương
 **Ngày xác nhận:** 2026-08-05
